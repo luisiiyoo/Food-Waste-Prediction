@@ -1,18 +1,18 @@
 
 from flask import Blueprint, jsonify, make_response
-from App.Server import server
+from App.Server import app_info
 
-info_controllers = Blueprint('info', __name__, url_prefix='')
+app_info_controller = Blueprint('info', __name__, url_prefix='')
 
 
-@info_controllers.route('/', methods=['GET'])
+@app_info_controller.route('/', methods=['GET'])
 def index():
     return "Food Waste Predictions is running!"
 
 
-@info_controllers.route('/health', methods=['GET'])
+@app_info_controller.route('/health', methods=['GET'])
 def health():
-    is_health: bool = server.is_mongo_client_healthy()
+    is_health: bool = app_info.is_mongo_client_healthy()
     status = 'pass' if is_health else 'fail'
     return make_response(jsonify({'status': status}), 200)
 

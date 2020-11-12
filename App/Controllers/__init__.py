@@ -1,1 +1,1 @@
-from .info_controller import info_controllers
+from .app_info_controller import app_info_controller
