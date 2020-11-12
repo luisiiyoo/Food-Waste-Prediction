@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
-from App.controllers import info_controllers
+from App.Controllers import info_controllers
 
 
 def create_app():

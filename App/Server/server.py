@@ -1,6 +1,6 @@
 import traceback
 
-from App.database import db
+from App.Database import db
 
 
 def is_mongo_client_healthy() -> bool:

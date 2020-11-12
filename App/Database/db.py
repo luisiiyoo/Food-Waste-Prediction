@@ -27,7 +27,7 @@ class MongoManager:
     @staticmethod
     def get_game_collection(collection_name: str) -> Collection:
         """
-        Gets a database collection
+        Gets a Database collection
 
         Args:
             collection_name (str): Collection name
@@ -41,6 +41,15 @@ class MongoManager:
 
 
 def client_health() -> MongoClient:
+    """
+    Gets a MongoClient instance with the server information
+
+    Args:
+        None
+
+    Returns:
+        MongoClient: Connectivity server information
+    """
     client = MongoManager.get_client()
     return client.server_info()
 
@@ -116,7 +125,7 @@ def update_one_by_id(id_document: str, dict_updates: Dict, collection_name: str)
 
 def delete_one_by_id(id_document: str, collection_name: str) -> None:
     """
-    Removes a game from the database
+    Removes a game from the Database
 
     Args:
         id_document (str): Mongo document identifier (_id)
