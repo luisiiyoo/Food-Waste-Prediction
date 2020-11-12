@@ -1,0 +1,1 @@
+web: gunicorn food_wasted_predictions:app --log-file=-

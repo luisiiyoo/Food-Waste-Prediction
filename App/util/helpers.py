@@ -1,0 +1,74 @@
+import json
+import random
+import uuid
+from typing import Any, Dict, List
+from numpy.random import permutation
+
+
+def str_to_bool(cad: str) -> bool:
+    """
+    Converts an string to boolean
+
+    Args:
+        cad (str): string
+
+    Returns:
+        bool: string converted to boolean
+    """
+    return not (cad.lower() in ['false', '0'])
+
+
+def to_dict(obj: Any) -> Dict:
+    """
+    Converts an instance to a dictionary
+
+    Args:
+        obj (Any): Object instance
+
+    Returns:
+        Dict: Instance converted to a dictionary
+    """
+    return json.loads(json.dumps(obj, default=lambda o: o.__dict__))
+
+
+def get_random_string(len_str: int = 12) -> str:
+    """
+    Returns a random string
+
+    Args:
+        len_str (int): Random string length desired (Default: 12)
+
+    Returns:
+        random_str (str): Random string
+    """
+    random_str = str(uuid.uuid4()).replace('-', '')
+    return random_str[-len_str:]
+
+
+def get_random_num_in_range(start, stop) -> int:
+    """
+    Returns a random integer between a range
+
+    Args:
+        start (int): Star range
+        stop (int): Stop range
+
+    Returns:
+        random_int (int): Random integer
+    """
+    return random.randint(start, stop)
+
+
+def get_random_indexes(size_perm: int, num_idx: int) -> List[int]:
+    """
+    Returns a list of n-random indexes
+
+    Args:
+        size_perm (int): Last possible index (starting in 0)
+        num_idx (int): Number of random indexes wanted
+
+    Returns:
+        list_indexes (int): List of n-random indexes
+      """
+    return list(permutation(size_perm))[0:num_idx]
+

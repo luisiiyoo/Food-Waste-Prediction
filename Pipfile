@@ -1,0 +1,21 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+autopep8 = "*"
+
+[packages]
+numpy = "*"
+termcolor = "*"
+future = "*"
+flask = "*"
+pymongo = "*"
+dnspython = "*"
+flask-cors = "*"
+gunicorn = "*"
+
+[requires]
+python_version = "3.8"
