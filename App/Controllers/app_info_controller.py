@@ -1,6 +1,6 @@
 
 from flask import Blueprint, jsonify, make_response
-from App.Server import app_info
+from App.Server import app_info_server
 
 app_info_controller = Blueprint('info', __name__, url_prefix='')
 
@@ -12,7 +12,7 @@ def index():
 
 @app_info_controller.route('/health', methods=['GET'])
 def health():
-    is_health: bool = app_info.is_mongo_client_healthy()
+    is_health: bool = app_info_server.is_mongo_client_healthy()
     status = 'pass' if is_health else 'fail'
     return make_response(jsonify({'status': status}), 200)
 

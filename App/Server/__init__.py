@@ -1,1 +1,1 @@
-import App.Server.app_info
+import App.Server.app_info_server
