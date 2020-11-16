@@ -1,11 +1,15 @@
+import os
 from flask import Flask
 from flask_cors import CORS
-from App.Controllers import app_info_controller
+from App.Controllers import app_info_blueprint, preprocessing_blueprint
+from config.upload_files import UPLOAD_FOLDER
 
 
 def create_app():
     app = Flask(__name__)
+    app.secret_key = os.urandom(24)
     CORS(app)
-    app.register_blueprint(app_info_controller)
+    app.register_blueprint(app_info_blueprint)
+    app.register_blueprint(preprocessing_blueprint)
     return app
 

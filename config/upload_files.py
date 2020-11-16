@@ -1,0 +1,4 @@
+UPLOAD_FOLDER = './temp'
+UPLOAD_TEMP_NAME = 'data'
+ALLOWED_EXTENSIONS = {'tsv', 'csv'}
+MAX_FILE_LENGTH = 16 * 1024 * 1024

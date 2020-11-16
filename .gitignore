@@ -1,3 +1,6 @@
+# PROJECT
+/temp
+
 __pycache__/
 .vscode/
 .idea/
