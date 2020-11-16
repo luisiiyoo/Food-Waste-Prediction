@@ -2,7 +2,6 @@ import os
 from flask import Flask
 from flask_cors import CORS
 from App.Controllers import app_info_blueprint, preprocessing_blueprint
-from config.upload_files import UPLOAD_FOLDER
 
 
 def create_app():

@@ -1,4 +1,3 @@
-
 from flask import Blueprint, jsonify, make_response
 from App.Server import app_info_server
 

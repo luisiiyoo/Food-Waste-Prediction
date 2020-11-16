@@ -1,6 +1,7 @@
+import traceback
 import os
+import shutil
 from flask import Blueprint, jsonify, make_response, request, flash, redirect, url_for, send_from_directory
-from App.Server import app_info_server
 from werkzeug.utils import secure_filename
 from config.upload_files import ALLOWED_EXTENSIONS, UPLOAD_FOLDER, UPLOAD_TEMP_NAME
 
@@ -23,10 +24,9 @@ def upload_file():
             flash('No selected file')
             return redirect(request.url)
         if file and allowed_file(file.filename):
+            if not os.path.exists(UPLOAD_FOLDER):
+                os.makedirs(UPLOAD_FOLDER)
             filename: str = secure_filename(file.filename)
-            *_, extension = os.path.splitext(filename)
-
-            filename = f'{UPLOAD_TEMP_NAME}{extension}'
             file.save(os.path.join(UPLOAD_FOLDER, filename))
             return redirect(url_for('preprocessing.uploaded_file', filename=filename))
     allowed_extensions = ' / '.join(ALLOWED_EXTENSIONS).upper()
@@ -43,4 +43,12 @@ def upload_file():
 
 @preprocessing_blueprint.route('/uploads/<string:filename>')
 def uploaded_file(filename: str):
+    try:
+        dir_file = os.path.join(UPLOAD_FOLDER, filename)
+        print(f"Exists {dir_file}: {os.path.exists(dir_file)}")
+    except Exception as e:
+        traceback.print_exc()
+    finally:
+        if os.path.exists(UPLOAD_FOLDER) and os.path.isdir(UPLOAD_FOLDER):
+            shutil.rmtree(UPLOAD_FOLDER)
     return "Holas"
