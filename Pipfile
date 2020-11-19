@@ -8,6 +8,11 @@ pylint = "*"
 autopep8 = "*"
 
 [packages]
+pandas = "==1.1.2"
+xlrd = "==1.2.0"
+nltk = "*"
+autocorrect = "*"
+sklearn = "*"
 numpy = "*"
 termcolor = "*"
 future = "*"

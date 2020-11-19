@@ -1,5 +1,4 @@
 import traceback
-
 from App.Database import db
 
 

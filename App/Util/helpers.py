@@ -1,8 +1,27 @@
 import json
 import random
 import uuid
+import time
+from datetime import datetime
 from typing import Any, Dict, List
 from numpy.random import permutation
+from App.Util.constants import DATE_FORMAT
+
+
+def str_to_timestamp(date: str):
+    date_formats = (DATE_FORMAT, DATE_FORMAT.replace('-', '/'), DATE_FORMAT.replace('-', '.'))
+    for fmt in date_formats:
+        try:
+            dt_object = datetime.strptime(date, fmt).timetuple()
+            return time.mktime(dt_object)
+        except ValueError:
+            pass
+        raise ValueError(f"No valid date format found. Use the next format: '{DATE_FORMAT}'.")
+
+
+def timestamp_to_str(timestamp: int):
+    dt_object = datetime.fromtimestamp(timestamp)
+    return dt_object.strftime(DATE_FORMAT)
 
 
 def str_to_bool(cad: str) -> bool:
@@ -71,4 +90,3 @@ def get_random_indexes(size_perm: int, num_idx: int) -> List[int]:
         list_indexes (int): List of n-random indexes
       """
     return list(permutation(size_perm))[0:num_idx]
-
