@@ -1,7 +1,7 @@
 import pandas
 from typing import Dict, List
 from App.Util.constants import CATERINGS, NUM_DAYS_SERVICE, NO_SERVICE_TAGS
-from App.Models.menu import Menu
+from App.Models import Menu
 
 DATE = 'date'
 DAY = 'day'

@@ -1,0 +1,15 @@
+Catering	La Universal	MONDAY	TUESDAY	WEDNESDAY	THURSDAY	FRIDAY
+		2020-02-03	2020-02-04	2020-02-05	2020-02-06	2020-02-07
+Event	Diet	Monday	Tuesday	Wednesday	Thursday	Friday
+Breakfast	Regular	HOLIDAY	* Pancakes (3pcs) OR * Scrambled eggs with turkey sausage OR * 1.5 Pancakes + 1/2 portion of scrambled eggs	* Double quesadillas of turkey ham OR * Scrambled eggs with chorizo OR * 1/2 Quesadilla + 1/2 portion of scrambled eggs	* Ham and cheese Lonche (1pc) OR * Scrambled eggs with bacon OR * 1/2 lonche + 1/2 portion of scrambled eggs	* Trivorced chilaquiles (Creamy chipotle , green tomatillo and red tomato sauce) OR * Egg tortilla OR * 1/2 Portion of chilaquiles + 1/2 Egg tortilla
+Breakfast	Light	HOLIDAY	Scrambled egg whites	Scrambled egg whites with nopales	Scrambled egg whites	Scrambled egg whites with diced machaca
+Breakfast	Vegan	HOLIDAY	Vegan pancakes (3pcs)	Double quesadillas of bellpepper and vegan cheese	Vegan Lonche (1pc)	Divorced chilaquiles  (Green tomatillo and red tomato sauce)
+Breakfast	Vegetarian	HOLIDAY	* Pancakes (3pcs) OR * Scrambled eggs mexican style OR * 1.5 Pancakes + 1/2 portion of scrambled eggs	* Double quesadillas of bellpepper OR * Scrambled eggs with nopales OR * 1/2 Quesadilla + 1/2 portion of scrambled eggs	* Veggie Lonche (1pc) OR * Scrambled eggs with bellpepper OR * 1/2 lonche + 1/2 portion of scrambled eggs	* Trivorced chilaquiles (Creamy chipotle , green tomatillo and red tomato sauce) OR * Egg tortilla OR * 1/2 Portion of chilaquiles + 1/2 Egg tortilla
+Lunch	Regular	HOLIDAY	* BEEF FAJITAS  Side Dishes:  Red rice / Charro beans	* CARNE EN SU JUGO Side Dishes:  Refried beans with yellow corn / Bacon bits	* MEXICAN FLAUTAS: SHREDDED PORKLEG, CHICKEN, POTATO, BEANS AND CHEESE Side Dishes:  Avocado / Chickpea soup	* KUM PAO CHICKEN Side Dishes:  Gohan rice / Sautéed veggies
+Lunch	Light	HOLIDAY	* BEEF FAJITAS  Side Dishes:  Red rice / Charro beans	* CARNE EN SU JUGO Side Dishes:  Refried beans with yellow corn / Panela cheese slices	* PORKLOIN TOSTADAS Side Dishes:  Avocado / Chickpea soup	* KUM PAO CHICKEN (LIGHT) Side Dishes:  Gohan rice / Sautéed veggies
+Lunch	Vegan	HOLIDAY	* MUSHROOM FAJITAS  Side Dishes:  Red rice / Charro beans	* CARNE EN SU JUGO (VEGGIES) Side Dishes:  Refried beans with yellow corn / Golden potatoes	* MEXICAN FLAUTAS: POTATO AND BEANS Side Dishes:  Avocado / Chickpea soup	* KOREAN STYLE POPCORN BBQ Side Dishes:  Gohan rice / Sautéed veggies
+Lunch	Vegetarian	HOLIDAY	* MUSHROOM FAJITAS  Side Dishes:  Red rice / Charro beans	* CARNE EN SU JUGO Side Dishes:  Refried beans with yellow corn / Panela cheese slices	* MEXICAN FLAUTAS: POTATO, BEANS AND CHEESE Side Dishes:  Avocado / Chickpea soup	* KOREAN STYLE POPCORN BBQ Side Dishes:  Gohan rice / Sautéed veggies
+Lunch	Extras	HOLIDAY	ROMAINE SALAD	MIXED LETTUCE SALAD	ROMAINE SALAD	SPINACH SALAD
+Dinner	Regular	HOLIDAY	NO DINNER	NO DINNER	NO DINNER	NO DINNER
+Dinner	Vegan	HOLIDAY	NO DINNER	NO DINNER	NO DINNER	NO DINNER
+Dinner	Vegetarian	HOLIDAY	NO DINNER	NO DINNER	NO DINNER	NO DINNER

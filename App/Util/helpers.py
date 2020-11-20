@@ -24,6 +24,10 @@ def timestamp_to_str(timestamp: int):
     return dt_object.strftime(DATE_FORMAT)
 
 
+def datetime_to_str(date: datetime):
+    return date.strftime(DATE_FORMAT)
+
+
 def str_to_bool(cad: str) -> bool:
     """
     Converts an string to boolean

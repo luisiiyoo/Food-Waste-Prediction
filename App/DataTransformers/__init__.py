@@ -1,1 +1,2 @@
-from .MenuTransformer import MenuTransformer
+from .menu_transformer import MenuTransformer
+from .register_transformer import RegisterTransformer
