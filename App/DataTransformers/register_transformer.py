@@ -1,9 +1,10 @@
 import pandas
 from termcolor import cprint
-from typing import Dict, List
-from App.Util.constants import NO_SERVICE_TAGS, EXTRA_TAG, BREAKFAST, LUNCH, COLOR_BREAKFAST, COLOR_LUNCH, DIETS
+from typing import Dict, List, Tuple
+from App.Util.constants import NO_SERVICE_TAGS, EXTRA_TAG, COLOR_BREAKFAST, COLOR_LUNCH, DIETS
 from App.Models import BreakfastRegister, LunchRegister
 from App.Util.helpers import datetime_to_str
+from App.Models.registers_collection import RegistersCollection
 
 INDEX_START = 1
 DATE = 'date'
@@ -33,15 +34,15 @@ class RegisterTransformer:
         self.breakfast_cols_idx = breakfast_cols_idx
         self.lunch_cols_idx = lunch_cols_idx
 
-    def build(self) -> Dict:
-        cprint('Breakfast ...', COLOR_BREAKFAST)
+    def build(self) -> Tuple[RegistersCollection, RegistersCollection]:
+        cprint('Extracting Breakfast data.', COLOR_BREAKFAST)
         df_breakfast = self.__extract_data(self.breakfast_cols_idx, False)
-        cprint('Lunch ...', COLOR_LUNCH)
+        cprint('Extracting Lunch data.', COLOR_LUNCH)
         df_lunch = self.__extract_data(self.lunch_cols_idx, True)
-        return {
-            BREAKFAST: df_to_breakfast_register(df_breakfast),
-            LUNCH: df_to_lunch_register(df_lunch)
-        }
+        breakfast_registers = RegistersCollection(df_to_breakfast_register(df_breakfast),
+                                                  list(df_breakfast[DATE].unique()))
+        lunch_registers = RegistersCollection(df_to_breakfast_register(df_lunch), list(df_lunch[DATE].unique()))
+        return breakfast_registers, lunch_registers
 
     def __extract_data(self, cols_idx: List[int], check_extra_meals: bool) -> pandas.DataFrame:
         xls_file = pandas.ExcelFile(self.full_path_file)
@@ -86,6 +87,8 @@ class RegisterTransformer:
             # Removing not valid diets records
             valid_diets = ['', *DIETS]
             df = df[df[DIET].isin(valid_diets)]
+            # Removing duplicated records and keeping the last
+            df = df.drop_duplicates(subset=PERSON, keep="last")
             frames.append(df)
 
         df_breakfast = pandas.concat(frames, ignore_index=True, axis=0)

@@ -1,5 +1,5 @@
 import pymongo
-from typing import Dict
+from typing import Dict, List
 from pymongo import MongoClient
 from pymongo.collection import Collection
 from pymongo.cursor import Cursor
@@ -105,7 +105,22 @@ def add_one(document: Dict, collection_name: str) -> None:
     collection.insert_one(document)
 
 
-def update_one_by_id(id_document: str, dict_updates: Dict, collection_name: str) -> None:
+def add_many(documents: List[Dict], collection_name: str) -> None:
+    """
+    Insets a new document into a collection
+
+    Args:
+        documents (Dict): List of documents to save
+        collection_name (str): Collection to search the element
+
+    Returns:
+        None
+    """
+    collection = MongoManager.get_game_collection(collection_name)
+    collection.insert_many(documents)
+
+
+def update_one_by_id(id_document: str, dict_updates: Dict, collection_name: str, upsert: bool = False) -> None:
     """
     Updates a document in a collection
 
@@ -113,6 +128,7 @@ def update_one_by_id(id_document: str, dict_updates: Dict, collection_name: str)
         id_document (str): Mongo document identifier (_id)
         dict_updates (Dict): Document updates
         collection_name (str): Collection to search the element
+        upsert (bool): True for creating a new record if the document does not match with the filter query
 
     Returns:
         None
@@ -120,20 +136,36 @@ def update_one_by_id(id_document: str, dict_updates: Dict, collection_name: str)
     collection = MongoManager.get_game_collection(collection_name)
     query = {'_id': id_document}
     updates = {'$set': dict_updates}
-    collection.update_one(query, updates, upsert=False)
+    collection.update_one(query, updates, upsert)
 
 
-def delete_one_by_id(id_document: str, collection_name: str) -> None:
+def delete_one(search_field: str, search_value: str, collection_name: str) -> None:
     """
     Removes a game from the Database
 
     Args:
-        id_document (str): Mongo document identifier (_id)
+        search_field (str): Field to identify the document
+        search_value (str): Value to identify the document
         collection_name (str): Collection to search the element
 
     Returns:
         None
     """
     collection = MongoManager.get_game_collection(collection_name)
-    collection.delete_one({'_id': id_document})
+    collection.delete_one({search_field: search_value})
 
+
+def delete_many(search_field: str, search_value: str, collection_name: str) -> None:
+    """
+    Removes a game from the Database
+
+    Args:
+        search_field (str): Field to identify the document
+        search_value (str): Value to identify the document
+        collection_name (str): Collection to search the element
+
+    Returns:
+        None
+    """
+    collection = MongoManager.get_game_collection(collection_name)
+    collection.delete_many({search_field: search_value})
