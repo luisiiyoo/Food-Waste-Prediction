@@ -1,9 +1,9 @@
 from typing import Dict, List, Union
 from termcolor import colored
 from App.Util.constants import COLOR_LUNCH, COLOR_BREAKFAST
-from App.Models import Menu, RegistersCollection, BreakfastRegister, LunchRegister
+from App.Models import Menu, BreakfastRegister, LunchRegister
 from App.Util.helpers import to_dict
-from App.DataTransformers import MenuTransformer, RegisterTransformer
+from App.Preproccessing.DataTransformers import MenuTransformer, RegisterTransformer
 from App.Database import db
 from config import MongoCollections
 from App.Util.constants import BREAKFAST, LUNCH
