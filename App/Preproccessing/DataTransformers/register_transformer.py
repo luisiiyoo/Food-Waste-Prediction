@@ -16,18 +16,64 @@ EXTRA = 'extra'
 
 
 def df_to_breakfast_register(df: pandas.DataFrame) -> List[BreakfastRegister]:
+    """
+    Transforms a dataframe to a list of breakfast registers
+
+    Args:
+        df (pandas.DataFrame): Registers dataframe to transform to a list of breakfast registers
+
+    Returns:
+        List[BreakfastRegister]: List of registers
+    """
     return [
         BreakfastRegister(date=row[DATE], person=row[PERSON], request=row[REQUEST], attend=row[ATTEND], diet=row[DIET])
         for _, row in df.iterrows()]
 
 
 def df_to_lunch_register(df: pandas.DataFrame) -> List[LunchRegister]:
+    """
+    Transforms a dataframe to a list of lunch registers
+
+    Args:
+        df (pandas.DataFrame): Registers dataframe to transform to a list of lunch registers
+
+    Returns:
+        List[LunchRegister]: List of registers
+    """
     return [
         LunchRegister(date=row[DATE], person=row[PERSON], request=row[REQUEST], attend=row[ATTEND], diet=row[DIET],
                       extra=row[EXTRA]) for _, row in df.iterrows()]
 
 
+def remove_extra_tag(diet: str) -> str:
+    """
+    Keeps the fist word given a text, i.e. "regular + extras" -> "regular"
+
+    Args:
+        diet (str): Text to keep the first word
+
+    Returns:
+        str: First word
+    """
+    diet_extra = diet.split()
+    return diet if len(diet_extra) == 0 else diet_extra[0]
+
+
 class RegisterTransformer:
+    """
+    RegisterTransformer class to extract people registers from raw text
+
+    Args:
+        full_path_file (str): Full path of the file to extract the data
+        breakfast_cols_idx (List[int]): Column indexes of breakfast registers
+        lunch_cols_idx (List[int]): Column indexes of lunch registers
+
+    Attributes:
+        full_path_file (str): Full path of the file to extract the data
+        breakfast_cols_idx (List[int]): Column indexes of breakfast registers
+        lunch_cols_idx (List[int]): Column indexes of lunch registers
+    """
+
     def __init__(self, full_path_file: str, breakfast_cols_idx: List[int] = [0, 1, 2],
                  lunch_cols_idx: List[int] = [0, 4, 5]):
         self.full_path_file = full_path_file
@@ -35,6 +81,16 @@ class RegisterTransformer:
         self.lunch_cols_idx = lunch_cols_idx
 
     def build(self) -> Tuple[RegistersCollection, RegistersCollection]:
+        """
+        Extracts the data from the file provided on the constructor
+
+        Args:
+            None
+
+        Returns:
+            RegistersCollection: Breakfast registers
+            RegistersCollection: Lunch registers
+        """
         cprint('Extracting Breakfast data.', COLOR_BREAKFAST)
         df_breakfast = self.__extract_data(self.breakfast_cols_idx, False)
         cprint('Extracting Lunch data.', COLOR_LUNCH)
@@ -45,6 +101,16 @@ class RegisterTransformer:
         return breakfast_registers, lunch_registers
 
     def __extract_data(self, cols_idx: List[int], check_extra_meals: bool) -> pandas.DataFrame:
+        """
+        Extracts the data bny catering (breakfast or lunch)
+
+        Args:
+            cols_idx (List[int]): Column indexes to get the data
+            check_extra_meals (bool): Validate if the register wants extra meals
+
+        Returns:
+            pandas.DataFrame: Registers extracted
+        """
         xls_file = pandas.ExcelFile(self.full_path_file)
         sheets = xls_file.sheet_names
         frames: List[pandas.DataFrame] = []
@@ -94,8 +160,3 @@ class RegisterTransformer:
         df_breakfast = pandas.concat(frames, ignore_index=True, axis=0)
         df_breakfast.sort_values(by=[DATE], ascending=True, inplace=True)
         return df_breakfast.reset_index(drop=True)
-
-
-def remove_extra_tag(diet: str):
-    diet_extra = diet.split()
-    return diet if len(diet_extra) == 0 else diet_extra[0]
