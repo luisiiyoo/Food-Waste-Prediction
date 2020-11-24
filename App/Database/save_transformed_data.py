@@ -6,6 +6,7 @@ from App.Util.helpers import to_dict
 from App.Database import db
 from config import MongoCollections
 from App.Util.constants import BREAKFAST, LUNCH
+from App.Util.constants import CATERINGS
 
 
 def save_menus(dict_menus: Dict[str, List[Menu]]) -> None:
@@ -28,7 +29,7 @@ def save_menu_data(catering: str, menus: List[Menu], dates: List[str]) -> None:
     elif catering == LUNCH:
         collection_name = MongoCollections.MENUS_LUNCH
     else:
-        raise Exception(f"Invalid catering '{catering}' to save data into the database.")
+        raise Exception(f"Invalid catering '{catering}' to save data into the database.  Possible values: {CATERINGS}")
 
     for date in dates:
         db.delete_many('date', date, collection_name)
@@ -52,7 +53,7 @@ def save_register_data(catering: str, registers: List[Union[BreakfastRegister, L
     elif catering == LUNCH:
         collection_name = MongoCollections.REGISTERS_LUNCH
     else:
-        raise Exception(f"Invalid catering '{catering}' to save data into the database.")
+        raise Exception(f"Invalid catering '{catering}' to save data into the database. Possible values: {CATERINGS}")
 
     for date in dates:
         db.delete_many('date', date, collection_name)

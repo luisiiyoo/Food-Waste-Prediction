@@ -41,6 +41,34 @@ class BagOfWords:
         self.__bow_vectors: List[List[int]] = []
         self.__vectorizer: CountVectorizer = None
 
+    def build(self, df: pandas.DataFrame, filter_col_name: str) -> None:
+        """
+        Extracts the text from a data frame and creates the bow features and vectors from the whole corpus
+
+        Args:
+            df (pandas.DataFrame): Data frame to extract the text
+            filter_col_name (str): Column name to filter data
+
+        Returns:
+            None
+        """
+        # Get clean stemmed data
+        for col_name in self.col_names_features:
+            filtered_data = df.loc[df[filter_col_name], col_name]
+            diet_texts = filtered_data.astype(str).values.tolist()
+            self.__clean_text_data += self.stem_raw_text_list(
+                diet_texts, feed_stem_dict=True)
+        # Get Bag of Words
+        self.__vectorizer = CountVectorizer(max_features=self.max_features)
+        self.__bow_vectors = self.__vectorizer.fit_transform(
+            self.__clean_text_data).toarray()
+        self.__bow_features = self.__vectorizer.get_feature_names()
+
+        # Keep only the features names in the dict
+        for feature in self.__bow_features:
+            self.__features_stem_words_dict[feature] = self.__stem_words_dict[feature]
+        self.print_results()
+
     def get_stemmed_words_dict(self) -> Dict[str, Set]:
         """
         Gets all the stemmed words as keys and their original words
@@ -131,34 +159,6 @@ class BagOfWords:
             final_text = " ".join(stem_clean_tokens)
             clean_text_list.append(final_text)
         return clean_text_list
-
-    def build(self, df: pandas.DataFrame, filter_col_name: str) -> None:
-        """
-        Extracts the text from a data frame and creates the bow features and vectors from the whole corpus
-
-        Args:
-            df (pandas.DataFrame): Data frame to extract the text
-            filter_col_name (str): Column name to filter data
-
-        Returns:
-            None
-        """
-        # Get clean stemmed data
-        for col_name in self.col_names_features:
-            filtered_data = df.loc[df[filter_col_name], col_name]
-            diet_texts = filtered_data.astype(str).values.tolist()
-            self.__clean_text_data += self.stem_raw_text_list(
-                diet_texts, feed_stem_dict=True)
-        # Get Bag of Words
-        self.__vectorizer = CountVectorizer(max_features=self.max_features)
-        self.__bow_vectors = self.__vectorizer.fit_transform(
-            self.__clean_text_data).toarray()
-        self.__bow_features = self.__vectorizer.get_feature_names()
-
-        # Keep only the features names in the dict
-        for feature in self.__bow_features:
-            self.__features_stem_words_dict[feature] = self.__stem_words_dict[feature]
-        self.print_results()
 
     def vectorize_raw_data(self, raw_texts: List[str], print_result: bool = False) -> List[List[int]]:
         """

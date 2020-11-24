@@ -10,6 +10,7 @@ preprocessing_blueprint = Blueprint('preprocessing', __name__, url_prefix='')
 
 FILE_KEY = 'file'
 FILE_TYPE_KEY = 'fileType'
+CATERING = 'catering'
 
 
 def validate_upload_file_request(func):
@@ -99,3 +100,17 @@ def transform_register_file():
     finally:
         if os.path.exists(full_path_file) and os.path.isfile(full_path_file):
             os.remove(full_path_file)
+
+
+@preprocessing_blueprint.route('/menu-bow/build', methods=['POST'])
+def build_menu_bow():
+    try:
+        catering = request.json.get(CATERING)
+        if catering is None:
+            return jsonify({'error': f"No '{CATERING}' field was provided"}), 400
+
+        data = preprocessing_server.build_menus_bow_model(catering)
+        return make_response(jsonify(data), 200)
+    except Exception as e:
+        traceback.print_exc()
+        return make_response(jsonify({'error': str(e)}), 400)
