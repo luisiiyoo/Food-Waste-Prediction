@@ -3,8 +3,8 @@ from os.path import isfile, join, splitext
 from typing import List
 import requests
 
-UPLOAD_MENUS = False
-UPLOAD_REGISTERS = True
+UPLOAD_MENUS = True
+UPLOAD_REGISTERS = False
 UPLOAD_MENUS_URL = "http://0.0.0.0:5050/menu/transform_file"
 UPLOAD_REGISTERS_URL = "http://0.0.0.0:5050/register/transform_file"
 MENUS_PATH = './data/MENU/'
@@ -22,6 +22,7 @@ def get_list_of_files(path: str, extensions: List[str] = []):
 
 # Main
 if UPLOAD_MENUS:
+    print("Uploading Menus...")
     menu_files = get_list_of_files(MENUS_PATH, MENUS_EXTENSION)
     num_files = len(menu_files)
     for idx, file in enumerate(menu_files):
@@ -32,6 +33,7 @@ if UPLOAD_MENUS:
             print(response)
 
 if UPLOAD_REGISTERS:
+    print("Uploading Registers...")
     register_files = get_list_of_files(REGISTERS_PATH, REGISTERS_EXTENSION)
     num_files = len(register_files)
     for idx, file in enumerate(register_files):

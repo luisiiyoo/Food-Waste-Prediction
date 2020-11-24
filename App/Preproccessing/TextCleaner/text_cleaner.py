@@ -65,9 +65,9 @@ def remove_non_alphabetic_chars(word: str) -> str:
     return re.sub('[^A-Za-z]', ' ', word)
 
 
-def change_abbreviations_for_complete_word(word: str) -> str:
+def remove_unwanted_characters(word: str) -> str:
     """
-    Replaces abbreviations in a text. i.e: 'pc' -> 'piece'
+    Replaces abbreviations in a text and removes unwanted characters. i.e: 'pc' -> 'piece'
 
     Args:
         word (str): Word to apply the change
@@ -75,6 +75,7 @@ def change_abbreviations_for_complete_word(word: str) -> str:
     Returns:
         new_word (str): String with no abbreviations
     """
+    word = word.replace('*', '').replace('+', 'and')
     return re.sub('pc', 'piece', word)
 
 

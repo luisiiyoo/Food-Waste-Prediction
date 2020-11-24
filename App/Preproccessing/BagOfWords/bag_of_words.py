@@ -117,7 +117,7 @@ class BagOfWords:
             # Preprocessing
             text = text.strip().lower()
             text = text_cleaner.add_space_between_number_and_chars(text)
-            text = text_cleaner.change_abbreviations_for_complete_word(text)
+            text = text_cleaner.remove_unwanted_characters(text)
             text = text_cleaner.remove_non_alphabetic_chars(text)
             # Stemming
             tokens = text_cleaner.get_tokens_word(text)

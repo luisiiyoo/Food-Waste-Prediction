@@ -69,8 +69,6 @@ class MenuTransformer:
                 diet: str = df.iloc[row_idx, self.diet_col_idx].strip().lower()
                 dish: str = df.loc[row_idx, day_column].strip().lower()
 
-                dish = dish.replace('*', '').replace('+', 'and')
-
                 record[IS_SERVICE_DAY] = dish not in NO_SERVICE_TAGS
                 record[diet] = dish if record[IS_SERVICE_DAY] else None
 
