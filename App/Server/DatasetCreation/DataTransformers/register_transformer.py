@@ -1,18 +1,12 @@
 import pandas
 from termcolor import cprint
-from typing import Dict, List, Tuple
-from App.Util.constants import NO_SERVICE_TAGS, EXTRA_TAG, COLOR_BREAKFAST, COLOR_LUNCH, DIETS
-from App.Models import BreakfastRegister, LunchRegister
+from typing import Dict, List
+from App.Util.constants import NO_SERVICE_TAGS, EXTRA_TAG, COLOR_BREAKFAST, COLOR_LUNCH, DIETS, BREAKFAST, LUNCH, \
+    RegisterFields
+from App.Models import BreakfastRegister, LunchRegister, AbstractRegister
 from App.Util.helpers import datetime_to_str
-from App.Models.registers_collection import RegistersCollection
 
 INDEX_START = 1
-DATE = 'date'
-PERSON = 'person'
-DIET = 'diet'
-ATTEND = 'attend'
-REQUEST = 'request'
-EXTRA = 'extra'
 
 
 def df_to_breakfast_register(df: pandas.DataFrame) -> List[BreakfastRegister]:
@@ -26,7 +20,9 @@ def df_to_breakfast_register(df: pandas.DataFrame) -> List[BreakfastRegister]:
         List[BreakfastRegister]: List of registers
     """
     return [
-        BreakfastRegister(date=row[DATE], person=row[PERSON], request=row[REQUEST], attend=row[ATTEND], diet=row[DIET])
+        BreakfastRegister(date=row[RegisterFields.DATE], person=row[RegisterFields.PERSON],
+                          request=row[RegisterFields.REQUEST], attend=row[RegisterFields.ATTEND],
+                          diet=row[RegisterFields.DIET])
         for _, row in df.iterrows()]
 
 
@@ -41,8 +37,9 @@ def df_to_lunch_register(df: pandas.DataFrame) -> List[LunchRegister]:
         List[LunchRegister]: List of registers
     """
     return [
-        LunchRegister(date=row[DATE], person=row[PERSON], request=row[REQUEST], attend=row[ATTEND], diet=row[DIET],
-                      extra=row[EXTRA]) for _, row in df.iterrows()]
+        LunchRegister(date=row[RegisterFields.DATE], person=row[RegisterFields.PERSON],
+                      request=row[RegisterFields.REQUEST], attend=row[RegisterFields.ATTEND],
+                      diet=row[RegisterFields.DIET], extra=row[RegisterFields.EXTRA]) for _, row in df.iterrows()]
 
 
 def remove_extra_tag(diet: str) -> str:
@@ -80,7 +77,7 @@ class RegisterTransformer:
         self.breakfast_cols_idx = breakfast_cols_idx
         self.lunch_cols_idx = lunch_cols_idx
 
-    def build(self) -> Tuple[RegistersCollection, RegistersCollection]:
+    def build(self) -> Dict[str, List[AbstractRegister]]:
         """
         Extracts the data from the file provided on the constructor
 
@@ -88,17 +85,18 @@ class RegisterTransformer:
             None
 
         Returns:
-            RegistersCollection: Breakfast registers
-            RegistersCollection: Lunch registers
+            Dict[str, List[AbstractRegister]]: Registers by catering
         """
         cprint('Extracting Breakfast data.', COLOR_BREAKFAST)
         df_breakfast = self.__extract_data(self.breakfast_cols_idx, False)
         cprint('Extracting Lunch data.', COLOR_LUNCH)
         df_lunch = self.__extract_data(self.lunch_cols_idx, True)
-        breakfast_registers = RegistersCollection(df_to_breakfast_register(df_breakfast),
-                                                  list(df_breakfast[DATE].unique()))
-        lunch_registers = RegistersCollection(df_to_breakfast_register(df_lunch), list(df_lunch[DATE].unique()))
-        return breakfast_registers, lunch_registers
+
+        registers: Dict[str, List[AbstractRegister]] = {
+            BREAKFAST: df_to_breakfast_register(df_breakfast),
+            LUNCH: df_to_breakfast_register(df_lunch)
+        }
+        return registers
 
     def __extract_data(self, cols_idx: List[int], check_extra_meals: bool) -> pandas.DataFrame:
         """
@@ -128,35 +126,36 @@ class RegisterTransformer:
             # Rename the columns
             col_names_old = df.columns
             date_record = col_names_old[0]
-            col_names_new = [PERSON, DIET, ATTEND]
+            col_names_new = [RegisterFields.PERSON, RegisterFields.DIET, RegisterFields.ATTEND]
             col_names_dict = dict(zip(col_names_old, col_names_new))
             df = df.rename(columns=col_names_dict)
 
             # Converting to the correct data type
-            df[REQUEST] = df.loc[:, DIET].notnull().tolist()
-            df[DATE] = datetime_to_str(date_record)
-            df[ATTEND] = df[ATTEND].astype('bool')
+            df[RegisterFields.REQUEST] = df.loc[:, RegisterFields.DIET].notnull().tolist()
+            df[RegisterFields.DATE] = datetime_to_str(date_record)
+            df[RegisterFields.ATTEND] = df[RegisterFields.ATTEND].astype('bool')
 
             # Keep data that is not empty on PERSON column
-            df = df[df[PERSON].notna()]
+            df = df[df[RegisterFields.PERSON].notna()]
 
             # Reset index
             df.reset_index(drop=True, inplace=True)
-            df = df[[PERSON, DATE, REQUEST, ATTEND, DIET]]
+            df = df[[RegisterFields.PERSON, RegisterFields.DATE, RegisterFields.REQUEST, RegisterFields.ATTEND,
+                     RegisterFields.DIET]]
 
-            df[DIET] = df[DIET].fillna('').str.lower().str.strip()
+            df[RegisterFields.DIET] = df[RegisterFields.DIET].fillna('').str.lower().str.strip()
             if check_extra_meals:
-                df[EXTRA] = df[DIET].str.contains(EXTRA_TAG, regex=False)
-                df[DIET] = df[DIET].map(lambda diet: str(diet).replace(EXTRA_TAG, ''))
-            df[DIET] = df[DIET].map(remove_extra_tag)
+                df[RegisterFields.EXTRA] = df[RegisterFields.DIET].str.contains(EXTRA_TAG, regex=False)
+                df[RegisterFields.DIET] = df[RegisterFields.DIET].map(lambda diet: str(diet).replace(EXTRA_TAG, ''))
+            df[RegisterFields.DIET] = df[RegisterFields.DIET].map(remove_extra_tag)
 
             # Removing not valid diets records
             valid_diets = ['', *DIETS]
-            df = df[df[DIET].isin(valid_diets)]
+            df = df[df[RegisterFields.DIET].isin(valid_diets)]
             # Removing duplicated records and keeping the last
-            df = df.drop_duplicates(subset=PERSON, keep="last")
+            df = df.drop_duplicates(subset=RegisterFields.PERSON, keep="last")
             frames.append(df)
 
         df_breakfast = pandas.concat(frames, ignore_index=True, axis=0)
-        df_breakfast.sort_values(by=[DATE], ascending=True, inplace=True)
+        df_breakfast.sort_values(by=[RegisterFields.DATE], ascending=True, inplace=True)
         return df_breakfast.reset_index(drop=True)

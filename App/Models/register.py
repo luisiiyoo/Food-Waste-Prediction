@@ -10,7 +10,7 @@ class AbstractRegister:
         self.date = date
         self.request = request
         self.attend = attend
-        if diet == '':
+        if diet == '' or diet is None:
             self.diet = None
         elif diet not in DIETS:
             raise Exception(f"'{diet}' is an invalid diet. Please use a valid diet: {DIETS}.")

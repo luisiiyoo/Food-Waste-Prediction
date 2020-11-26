@@ -6,7 +6,7 @@ import pandas
 from collections import defaultdict
 from termcolor import cprint
 from sklearn.feature_extraction.text import CountVectorizer
-from App.Preproccessing.TextCleaner import text_cleaner
+from App.Server.Preproccessing.TextCleaner import text_cleaner
 
 nltk.download('punkt')
 nltk.download('stopwords')
