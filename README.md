@@ -10,18 +10,18 @@ This directory contains all backend related artifacts. The directory structure i
 
     .
     ├── App                         # All the source code goes here
-        ├── Controllers             # All the endpoints are defined
+        ├── Controllers             # All the endpoints defined goes here
         ├── Database    `           # Data layer access is handled by this module
         ├── Models                  # Models for the database
-        ├── Server                  # All the services used to make predictions
+        ├── Server                  # All the services used to make predictions (see the above image)
             ├── DatasetCreation     # Dataset logic module
-            ├── Preprocessing       # Preprocesing data logic module
-        ├── Util                    # Auxiliar functions
-    ├── config                      # Configuration files for mongo, uploading diles, etc
+            ├── Preprocessing       # Preprocessing data logic module
+        ├── Util                    # Auxiliary functions and constants goes here
+    ├── config                      # Configuration files for mongo, uploading files, etc. goes here
     ├── sample_data                 # Temporary folder containing raw sample data
         ├── menus                   # Raw menus data
         ├── registers               # Raw registers data
-    ├── temp                        # Temporary upladed files goes here (like sample-data)
+    ├── temp                        # Temporary uploaded files goes here (like sample-data)
  
 Installation
 --------------
