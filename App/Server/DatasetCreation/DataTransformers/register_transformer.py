@@ -61,12 +61,12 @@ class RegisterTransformer:
     RegisterTransformer class to extract people registers from raw text
 
     Args:
-        full_path_file (str): Full path of the file to extract the data
+        full_path_file (str): Full path of the file to extract the sample_data
         breakfast_cols_idx (List[int]): Column indexes of breakfast registers
         lunch_cols_idx (List[int]): Column indexes of lunch registers
 
     Attributes:
-        full_path_file (str): Full path of the file to extract the data
+        full_path_file (str): Full path of the file to extract the sample_data
         breakfast_cols_idx (List[int]): Column indexes of breakfast registers
         lunch_cols_idx (List[int]): Column indexes of lunch registers
     """
@@ -79,7 +79,7 @@ class RegisterTransformer:
 
     def build(self) -> Dict[str, List[AbstractRegister]]:
         """
-        Extracts the data from the file provided on the constructor
+        Extracts the sample_data from the file provided on the constructor
 
         Args:
             None
@@ -87,9 +87,9 @@ class RegisterTransformer:
         Returns:
             Dict[str, List[AbstractRegister]]: Registers by catering
         """
-        cprint('Extracting Breakfast data.', COLOR_BREAKFAST)
+        cprint('Extracting Breakfast sample_data.', COLOR_BREAKFAST)
         df_breakfast = self.__extract_data(self.breakfast_cols_idx, False)
-        cprint('Extracting Lunch data.', COLOR_LUNCH)
+        cprint('Extracting Lunch sample_data.', COLOR_LUNCH)
         df_lunch = self.__extract_data(self.lunch_cols_idx, True)
 
         registers: Dict[str, List[AbstractRegister]] = {
@@ -100,10 +100,10 @@ class RegisterTransformer:
 
     def __extract_data(self, cols_idx: List[int], check_extra_meals: bool) -> pandas.DataFrame:
         """
-        Extracts the data bny catering (breakfast or lunch)
+        Extracts the sample_data bny catering (breakfast or lunch)
 
         Args:
-            cols_idx (List[int]): Column indexes to get the data
+            cols_idx (List[int]): Column indexes to get the sample_data
             check_extra_meals (bool): Validate if the register wants extra meals
 
         Returns:
@@ -130,12 +130,12 @@ class RegisterTransformer:
             col_names_dict = dict(zip(col_names_old, col_names_new))
             df = df.rename(columns=col_names_dict)
 
-            # Converting to the correct data type
+            # Converting to the correct sample_data type
             df[RegisterFields.REQUEST] = df.loc[:, RegisterFields.DIET].notnull().tolist()
             df[RegisterFields.DATE] = datetime_to_str(date_record)
             df[RegisterFields.ATTEND] = df[RegisterFields.ATTEND].astype('bool')
 
-            # Keep data that is not empty on PERSON column
+            # Keep sample_data that is not empty on PERSON column
             df = df[df[RegisterFields.PERSON].notna()]
 
             # Reset index

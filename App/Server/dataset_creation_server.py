@@ -12,7 +12,7 @@ def transform_menu_data(full_path_file: str) -> Dict[str, List[Menu]]:
         dict_menus: Dict[str, List[Menu]] = menu_transformer.build()
         return dict_menus
     except IndexError as e:
-        raise Exception("The file has not a valid structure for transforming to menu data.")
+        raise Exception("The file has not a valid structure for transforming to menu sample_data.")
 
 
 def transform_register_data(full_path_file: str) -> Dict[str, Dict]:
@@ -21,7 +21,7 @@ def transform_register_data(full_path_file: str) -> Dict[str, Dict]:
         dict_registers: Dict[str, List[AbstractRegister]] = register_transformer.build()
         return dict_registers
     except IndexError as e:
-        raise Exception("The file has not a valid structure for transforming to register data.")
+        raise Exception("The file has not a valid structure for transforming to register sample_data.")
 
 
 def insert_menus(catering: str, list_dict_menus: List[Dict]) -> None:

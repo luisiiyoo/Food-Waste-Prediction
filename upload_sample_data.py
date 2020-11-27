@@ -9,9 +9,9 @@ TRANSFORM_MENUS_FILES_URL = "http://0.0.0.0:5050/dataset_creation/menu/transform
 UPLOAD_MENUS_URL = "http://0.0.0.0:5050/dataset_creation/menu/insert"
 TRANSFORM_REGISTERS_FILES_URL = "http://0.0.0.0:5050/dataset_creation/register/transform_file"
 UPLOAD_REGISTERS_URL = "http://0.0.0.0:5050/dataset_creation/register/insert"
-MENUS_PATH = './data/MENU/'
+MENUS_PATH = './sample_data/menus/'
 MENUS_EXTENSION = ['.csv', '.tsv']
-REGISTERS_PATH = './data/REGISTERS/'
+REGISTERS_PATH = './sample_data/registers/'
 REGISTERS_EXTENSION = ['.xlsx']
 
 

@@ -19,11 +19,11 @@ class BagOfWords:
     BagOfWords class to extract features form raw text
 
     Args:
-        col_names_features (List[str]): Data frame columns names to extract from the raw data
+        col_names_features (List[str]): Data frame columns names to extract from the raw sample_data
         max_features (int): Maximum possible number of features to extract
 
     Attributes:
-        col_names_features (List[str]): Data frame columns names to extract from the raw data
+        col_names_features (List[str]): Data frame columns names to extract from the raw sample_data
         max_features (int): Maximum possible number of features to extract
         __cleaned_text_data (List[str]): Corpus of cleaned texts to get the features and vectors
         __stemmed_words_dict (Dict[str, Set]): All the stemmed words as keys and their original words
@@ -45,17 +45,17 @@ class BagOfWords:
 
     def build(self, df: pandas.DataFrame, filter_col_name: str) -> None:
         """
-        Extracts the text from a data frame and creates the bow features and vectors from the whole corpus
+        Extracts the text from a sample_data frame and creates the bow features and vectors from the whole corpus
 
         Args:
             df (pandas.DataFrame): Data frame to extract the text
-            filter_col_name (str): Column name to filter data
+            filter_col_name (str): Column name to filter sample_data
 
         Returns:
             None
         """
-        # Get clean stemmed data
-        cprint(f"Cleaning and stemming the data...", COLOR)
+        # Get clean stemmed sample_data
+        cprint(f"Cleaning and stemming the sample_data...", COLOR)
         for col_name in self.col_names_features:
             filtered_data = df.loc[df[filter_col_name], col_name]
             diet_texts = filtered_data.astype(str).values.tolist()

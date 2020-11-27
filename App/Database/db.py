@@ -12,13 +12,13 @@ class MongoManager:
     @staticmethod
     def get_client() -> MongoClient:
         """
-        Gets a MongoClient instance for connecting with the data base
+        Gets a MongoClient instance for connecting with the sample_data base
 
         Args:
             None
 
         Returns:
-            MongoClient: Instance for connecting with the data base
+            MongoClient: Instance for connecting with the sample_data base
         """
         if not MongoManager.__client:
             __client = pymongo.MongoClient(MONGO_STR_CONNECTION)

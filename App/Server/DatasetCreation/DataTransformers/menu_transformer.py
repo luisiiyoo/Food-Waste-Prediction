@@ -9,12 +9,12 @@ class MenuTransformer:
     MenuTransformer class to extract menus from raw text
 
     Args:
-        full_path_file (str): Full path of the file to extract the data
+        full_path_file (str): Full path of the file to extract the sample_data
         catering_col_idx (int): Catering index column
         diet_col_idx (int): Diet index column
 
     Attributes:
-        full_path_file (str): Full path of the file to extract the data
+        full_path_file (str): Full path of the file to extract the sample_data
         catering_col_idx (int): Catering index column
         diet_col_idx (int): Diet index column
     """
@@ -26,13 +26,13 @@ class MenuTransformer:
 
     def build(self, separator: str = "\t") -> Dict[str, List[Menu]]:
         """
-        Extracts the data from the file provided on the constructor
+        Extracts the sample_data from the file provided on the constructor
 
         Args:
             separator (str): Raw text separator to delimiter a new entry
 
         Returns:
-            Dict[str, List[Menu]]: Dictionary containing the data extracted by catering
+            Dict[str, List[Menu]]: Dictionary containing the sample_data extracted by catering
         """
         df = pandas.read_csv(self.full_path_file, sep=separator)
         menus: Dict[str, List[Menu]] = {catering: self.__get_menus_by_catering(df, catering) for catering in CATERINGS}
@@ -40,11 +40,11 @@ class MenuTransformer:
 
     def __get_menus_by_catering(self, df: pandas.DataFrame, catering: str) -> List[Menu]:
         """
-        Transforms the raw data to a list of Menus
+        Transforms the raw sample_data to a list of Menus
 
         Args:
-            df (pandas.DataFrame): Raw data
-            catering (str): Catering to extract the data
+            df (pandas.DataFrame): Raw sample_data
+            catering (str): Catering to extract the sample_data
 
         Returns:
             List[Menu]: List of menus
