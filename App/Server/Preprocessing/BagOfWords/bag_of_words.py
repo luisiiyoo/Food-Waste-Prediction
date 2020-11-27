@@ -6,10 +6,12 @@ import pandas
 from collections import defaultdict
 from termcolor import cprint
 from sklearn.feature_extraction.text import CountVectorizer
-from App.Server.Preproccessing.TextCleaner import text_cleaner
+from App.Server.Preprocessing.TextCleaner import text_cleaner
 
 nltk.download('punkt')
 nltk.download('stopwords')
+
+COLOR = "blue"
 
 
 class BagOfWords:
@@ -23,9 +25,9 @@ class BagOfWords:
     Attributes:
         col_names_features (List[str]): Data frame columns names to extract from the raw data
         max_features (int): Maximum possible number of features to extract
-        __clean_text_data (List[str]): Corpus of cleaned texts to get the features and vectors
-        __stem_words_dict (Dict[str, Set]): All the stemmed words as keys and their original words
-        __features_stem_words_dict (Dict[str, Set]): Stemmed words (only the features) as keys and their original words
+        __cleaned_text_data (List[str]): Corpus of cleaned texts to get the features and vectors
+        __stemmed_words_dict (Dict[str, Set]): All the stemmed words as keys and their original words
+        __stemmed_words_features_dict (Dict[str, Set]): Stemmed words (only the features) as keys and their original words
         __bow_features (List[str]): The N-most frequent words on the corpus
         __bow_vectors (List[List[int]]): Vector for each cleaned text
         __vectorizer (CountVectorizer): CountVectorizer object used to transform cleaned text to vector representation
@@ -34,9 +36,9 @@ class BagOfWords:
     def __init__(self, col_names_features: List[str], max_features: int):
         self.col_names_features = col_names_features
         self.max_features = max_features
-        self.__clean_text_data: List[str] = []
-        self.__stem_words_dict: Dict[str, Set] = defaultdict(set)
-        self.__features_stem_words_dict: Dict[str, Set] = dict()
+        self.__cleaned_text_data: List[str] = []
+        self.__stemmed_words_dict: Dict[str, Set] = defaultdict(set)
+        self.__stemmed_words_features_dict: Dict[str, Set] = dict()
         self.__bow_features: List[str] = []
         self.__bow_vectors: List[List[int]] = []
         self.__vectorizer: CountVectorizer = None
@@ -53,21 +55,22 @@ class BagOfWords:
             None
         """
         # Get clean stemmed data
+        cprint(f"Cleaning and stemming the data...", COLOR)
         for col_name in self.col_names_features:
             filtered_data = df.loc[df[filter_col_name], col_name]
             diet_texts = filtered_data.astype(str).values.tolist()
-            self.__clean_text_data += self.stem_raw_text_list(
+            self.__cleaned_text_data += self.stem_raw_text_list(
                 diet_texts, feed_stem_dict=True)
         # Get Bag of Words
+        cprint(f"Building the BoW model...", COLOR)
         self.__vectorizer = CountVectorizer(max_features=self.max_features)
-        self.__bow_vectors = self.__vectorizer.fit_transform(
-            self.__clean_text_data).toarray()
+        self.__bow_vectors = self.__vectorizer.fit_transform(self.__cleaned_text_data).toarray()
         self.__bow_features = self.__vectorizer.get_feature_names()
 
         # Keep only the features names in the dict
+        cprint(f"Keeping the stemmed words of the features...", COLOR)
         for feature in self.__bow_features:
-            self.__features_stem_words_dict[feature] = self.__stem_words_dict[feature]
-        self.print_results()
+            self.__stemmed_words_features_dict[feature] = self.__stemmed_words_dict[feature]
 
     def get_stemmed_words_dict(self) -> Dict[str, Set]:
         """
@@ -79,9 +82,9 @@ class BagOfWords:
         Returns:
             stem_words_dict (Dict[str, Set]): All the stemmed words as keys and their original words
         """
-        return self.__stem_words_dict
+        return self.__stemmed_words_dict
 
-    def get_features_stemmed_words_dict(self) -> Dict[str, Set]:
+    def get_stemmed_words_features_dict(self) -> Dict[str, Set]:
         """
         Gets the stemmed features as keys and their original words as a values
 
@@ -91,7 +94,7 @@ class BagOfWords:
         Returns:
             Dict[str, Set]: Stemmed features as keys and their original word
         """
-        return self.__features_stem_words_dict
+        return self.__stemmed_words_features_dict
 
     def get_features(self) -> List[List[int]]:
         """
@@ -154,7 +157,7 @@ class BagOfWords:
 
             if feed_stem_dict:
                 for token, stemmed_token in zip(clean_tokens, stem_clean_tokens):
-                    self.__stem_words_dict[stemmed_token].add(token)
+                    self.__stemmed_words_dict[stemmed_token].add(token)
 
             final_text = " ".join(stem_clean_tokens)
             clean_text_list.append(final_text)
@@ -184,14 +187,11 @@ class BagOfWords:
         return vectors
 
     def print_results(self) -> None:
-        cprint(
-            f'{self.__clean_text_data}\n Len: {len(self.__clean_text_data)}\n', 'green')
-        cprint(
-            f'{self.__features_stem_words_dict}\n Len: {len(self.__features_stem_words_dict)}\n', 'yellow')
+        cprint(f'{self.__cleaned_text_data}\n Len: {len(self.__cleaned_text_data)}\n', 'green')
+        cprint(f'{self.__stemmed_words_features_dict}\n Len: {len(self.__stemmed_words_features_dict)}\n', 'yellow')
         cprint(self.__bow_features, 'blue')
         cprint(self.__bow_vectors, 'blue')
-        cprint(
-            f'Size: {len(self.__bow_vectors)} * {len(self.__bow_vectors[0])}', 'blue')
+        cprint(f'Size: {len(self.__bow_vectors)} * {len(self.__bow_vectors[0])}', 'blue')
 
     def save_results(self, full_path_file: str) -> None:
         """

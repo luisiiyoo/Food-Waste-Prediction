@@ -29,3 +29,7 @@ class RegisterFields:
     ATTEND = 'attend'
     REQUEST = 'request'
     EXTRA = 'extra'
+
+
+BOW_MAX_FEATURES = 50
+BOW_FILE_PATH = './App/Server/Preprocessing/BagOfWords/models/'

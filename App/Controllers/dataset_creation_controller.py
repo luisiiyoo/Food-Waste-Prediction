@@ -36,6 +36,20 @@ def validate_upload_file_request(func):
     return wrapper
 
 
+def validate_insert_data_payload_request(func):
+    def wrapper():
+        breakfast: List[Dict] = request.json.get(BREAKFAST)
+        lunch: List[Dict] = request.json.get(LUNCH)
+        if breakfast is None:
+            return make_response(jsonify({'error': f"No '{BREAKFAST}' field was provided on the request."}), 400)
+        if lunch is None:
+            return make_response(jsonify({'error': f"No '{LUNCH}' field was provided on the request."}), 400)
+        return func()
+
+    wrapper.__name__ = func.__name__
+    return wrapper
+
+
 def is_allowed_file(filename: str, extensions: str):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in extensions
 
@@ -110,14 +124,11 @@ def transform_register_file():
 
 
 @dataset_creation_blueprint.route('/menu/insert', methods=['POST'])
+@validate_insert_data_payload_request
 def insert_menus_data():
     try:
         breakfast_menus: List[Dict] = request.json.get(BREAKFAST)
         lunch_menus: List[Dict] = request.json.get(LUNCH)
-        if breakfast_menus is None:
-            return make_response(jsonify({'error': f"No '{BREAKFAST}' field was provided on the request."}), 400)
-        if lunch_menus is None:
-            return make_response(jsonify({'error': f"No '{LUNCH}' field was provided on the request."}), 400)
 
         print(colored('Saving Breakfast menus on the db.', COLOR_BREAKFAST))
         insert_menus(BREAKFAST, breakfast_menus)
@@ -131,14 +142,11 @@ def insert_menus_data():
 
 
 @dataset_creation_blueprint.route('/register/insert', methods=['POST'])
+@validate_insert_data_payload_request
 def insert_registers_data():
     try:
         breakfast_registers: List[Dict] = request.json.get(BREAKFAST)
         lunch_registers: List[Dict] = request.json.get(LUNCH)
-        if breakfast_registers is None:
-            return make_response(jsonify({'error': f"No '{BREAKFAST}' field was provided on the request."}), 400)
-        if lunch_registers is None:
-            return make_response(jsonify({'error': f"No '{LUNCH}' field was provided on the request."}), 400)
 
         print(colored('Saving Breakfast registers on the db.', COLOR_BREAKFAST))
         insert_registers(BREAKFAST, breakfast_registers)

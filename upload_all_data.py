@@ -3,8 +3,8 @@ from os.path import isfile, join, splitext
 from typing import List
 import requests
 
-UPLOAD_MENUS_FLAG = False
-UPLOAD_REGISTERS_FLAG = True
+UPLOAD_MENUS_FLAG = True
+UPLOAD_REGISTERS_FLAG = False
 TRANSFORM_MENUS_FILES_URL = "http://0.0.0.0:5050/dataset_creation/menu/transform_file"
 UPLOAD_MENUS_URL = "http://0.0.0.0:5050/dataset_creation/menu/insert"
 TRANSFORM_REGISTERS_FILES_URL = "http://0.0.0.0:5050/dataset_creation/register/transform_file"
