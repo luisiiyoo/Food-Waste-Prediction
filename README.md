@@ -11,10 +11,10 @@ This directory contains all backend related artifacts. The directory structure i
     .
     ├── App                         # All the source code goes here
         ├── Controllers             # All the endpoints defined goes here
-        ├── Database    `           # Data layer access is handled by this module
+        ├── Database    `           # Dataset logic module
         ├── Models                  # Models for the database
         ├── Server                  # All the services used to make predictions (see the above image)
-            ├── DatasetCreation     # Dataset logic module
+            ├── DataCollector       # Feed database logic module
             ├── Preprocessing       # Preprocessing data logic module
         ├── Util                    # Auxiliary functions and constants goes here
     ├── config                      # Configuration files for mongo, uploading files, etc. goes here
