@@ -1,6 +1,6 @@
 import traceback
 from flask import Blueprint, jsonify, make_response, request
-from App.Server import preprocessing_server
+from App.Server import preprocessor_server
 from App.Util import BREAKFAST, LUNCH
 from App.Server import dataset_creator_server
 
@@ -34,7 +34,7 @@ def validate_bow_payload_request(func):
 def build_menu_bow():
     try:
         catering = request.json.get(CATERING)
-        time_elapsed, features = preprocessing_server.build_menus_bow_model(catering)
+        time_elapsed, features = preprocessor_server.build_menus_bow_model(catering)
         response = {
             "time": f"{round(time_elapsed, 4)} sec",
             "features": features
@@ -50,7 +50,7 @@ def build_menu_bow():
 def get_menu_bow_features():
     try:
         catering = request.json.get(CATERING)
-        features, stemmed_words_features = preprocessing_server.get_bow_features(catering)
+        features, stemmed_words_features = preprocessor_server.get_bow_features(catering)
         response = {
             "features": features,
             "stemmedWordsFeatures": {feature: list(set_words) for feature, set_words in stemmed_words_features.items()}

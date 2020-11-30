@@ -1,8 +1,8 @@
 from typing import List, Dict, Union
 import time
 import pandas
-from App.Server.Preprocessing.DatasetCreator import DatasetCreator
-from App.Server.preprocessing_server import read_menu_bow_model
+from App.Server.Preprocessor.DatasetCreator import DatasetCreator
+from App.Server.preprocessor_server import read_menu_bow_model
 from App.Database.query_data import get_list_menu_docs, get_list_register_docs
 from App.Database.save_data import save_dataset_to_db
 

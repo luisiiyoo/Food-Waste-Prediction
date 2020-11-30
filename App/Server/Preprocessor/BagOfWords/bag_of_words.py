@@ -6,7 +6,7 @@ import pandas
 from collections import defaultdict
 from termcolor import cprint
 from sklearn.feature_extraction.text import CountVectorizer
-from App.Server.Preprocessing.TextCleaner import text_cleaner
+from App.Server.Preprocessor.TextCleaner import text_cleaner
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -145,7 +145,7 @@ class BagOfWords:
         """
         clean_text_list: List[str] = []
         for text in text_list:
-            # Preprocessing
+            # Preprocessor
             text = text.strip().lower()
             text = text_cleaner.add_space_between_number_and_chars(text)
             text = text_cleaner.remove_unwanted_characters(text)

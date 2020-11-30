@@ -14,8 +14,8 @@ This directory contains all backend related artifacts. The directory structure i
         ├── Database    `           # Dataset logic module
         ├── Models                  # Models for the database
         ├── Server                  # All the services used to make predictions (see the above image)
-            ├── DataCollector       # Feed database logic module
-            ├── Preprocessing       # Preprocessing data logic module
+            ├── DataCollector       # Feeding database logic module
+            ├── Preprocessor        # Preprocessing data logic module
         ├── Util                    # Auxiliary functions and constants goes here
     ├── config                      # Configuration files for mongo, uploading files, etc. goes here
     ├── sample_data                 # Temporary folder containing raw sample data

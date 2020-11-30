@@ -4,7 +4,7 @@ import time
 import pandas
 from typing import Dict, List, Set, Tuple
 from App.Database.query_data import get_list_menu_docs
-from App.Server.Preprocessing.BagOfWords import BagOfWords
+from App.Server.Preprocessor.BagOfWords import BagOfWords
 from App.Util.constants import DIETS, BOW_MAX_FEATURES, MenuFields
 from App.Util.constants import BOW_FILE_PATH
 

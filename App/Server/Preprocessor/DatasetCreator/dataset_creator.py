@@ -2,7 +2,7 @@ import pandas
 from termcolor import cprint
 from typing import List, Dict, Set, Tuple, Union
 from App.Util.constants import DIETS, MenuFields, RegisterFields, DataGroupedFields
-from App.Server.Preprocessing.BagOfWords import BagOfWords
+from App.Server.Preprocessor.BagOfWords import BagOfWords
 
 
 def get_data_satisfy_condition(df: pandas.DataFrame, col_name: str, value: Union[str, bool]) -> pandas.DataFrame:

@@ -42,4 +42,4 @@ class DataGroupedFields:
 
 
 BOW_MAX_FEATURES = 50
-BOW_FILE_PATH = './App/Server/Preprocessing/BagOfWords/models/'
+BOW_FILE_PATH = './App/Server/Preprocessor/BagOfWords/models/'
