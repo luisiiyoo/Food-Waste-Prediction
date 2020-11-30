@@ -2,7 +2,13 @@ Food Waste Prediction
 ===================
 > TODO: Add a description about the project
 
+App flow
+--------------
 ![App flow](app_flow.png)
+
+App modules
+--------------
+![App modules](app_modules.png)
 
 Project layout
 --------------
@@ -16,6 +22,7 @@ This directory contains all backend related artifacts. The directory structure i
         ├── Server                  # All the services used to make predictions (see the above image)
             ├── DataCollector       # Feeding database logic module
             ├── Preprocessor        # Preprocessing data logic module
+            ├── Predictor           # Prediction logic module
         ├── Util                    # Auxiliary functions and constants goes here
     ├── config                      # Configuration files for mongo, uploading files, etc. goes here
     ├── sample_data                 # Temporary folder containing raw sample data
