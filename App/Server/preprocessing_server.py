@@ -3,7 +3,7 @@ import os
 import time
 import pandas
 from typing import Dict, List, Set, Tuple
-from App.Database import query_data
+from App.Database.query_data import get_list_menu_docs
 from App.Server.Preprocessing.BagOfWords import BagOfWords
 from App.Util.constants import DIETS, BOW_MAX_FEATURES, MenuFields
 from App.Util.constants import BOW_FILE_PATH
@@ -14,7 +14,7 @@ ID = '_id'
 def build_menus_bow_model(catering: str) -> Tuple[float, List[str]]:
     start: float = time.time()
     bow_file_path = f"{BOW_FILE_PATH}{catering}_menu.pkl"
-    menus: List[Dict] = query_data.get_list_menu_docs(catering)
+    menus: List[Dict] = get_list_menu_docs(catering)
     df = pandas.DataFrame(data=menus).set_index(ID).sort_index()
 
     bow = BagOfWords(DIETS, BOW_MAX_FEATURES)

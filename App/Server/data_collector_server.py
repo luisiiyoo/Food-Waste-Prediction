@@ -1,9 +1,9 @@
 from typing import Dict, List, Set, Union
 from App.Models import Menu, AbstractRegister, BreakfastRegister, LunchRegister
-from App.Server.DatasetCreation import MenuTransformer, RegisterTransformer
+from App.Server.DataCollector import MenuTransformer, RegisterTransformer
 from App.Util.constants import MenuFields, RegisterFields
 from App.Util.constants import BREAKFAST
-from App.Database.save_transformed_data import insert_menus_to_db, insert_registers_to_db
+from App.Database.save_data import save_menus_to_db, save_registers_to_db
 
 
 def transform_menu_data(full_path_file: str) -> Dict[str, List[Menu]]:
@@ -39,7 +39,7 @@ def insert_menus(catering: str, list_dict_menus: List[Dict]) -> None:
                         vegetarian=vegetarian)
             menus.append(menu)
         unique_dates: Set[str] = {menu.date for menu in menus}
-        insert_menus_to_db(catering, menus, unique_dates)
+        save_menus_to_db(catering, menus, unique_dates)
     except KeyError as e:
         raise Exception(f"Missing key {e} on one or many menus.")
 
@@ -60,6 +60,6 @@ def insert_registers(catering: str, list_dict_registers: List[Dict]) -> None:
                                          extra=RegisterFields.EXTRA)
             registers.append(register)
         unique_dates: Set[str] = {register.date for register in registers}
-        insert_registers_to_db(catering, registers, unique_dates)
+        save_registers_to_db(catering, registers, unique_dates)
     except KeyError as e:
         raise Exception(f"Missing key {e} on one or many registers for {catering}.")

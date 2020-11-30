@@ -96,7 +96,7 @@ class BagOfWords:
         """
         return self.__stemmed_words_features_dict
 
-    def get_features(self) -> List[List[int]]:
+    def get_features(self) -> List[str]:
         """
         Gets the the N-most frequent words on the corpus
 

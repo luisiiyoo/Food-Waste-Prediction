@@ -25,7 +25,7 @@ class MongoManager:
         return __client
 
     @staticmethod
-    def get_game_collection(collection_name: str) -> Collection:
+    def get_collection(collection_name: str) -> Collection:
         """
         Gets a Database collection
 
@@ -68,7 +68,7 @@ def find_one_by_id(id_document: str, collection_name: str) -> Dict:
     Returns:
         Dict: Mongo document
     """
-    collection = MongoManager.get_game_collection(collection_name)
+    collection = MongoManager.get_collection(collection_name)
     document = collection.find_one({'_id': id_document})
     if not document:
         raise Exception(f'Game {id_document} not found on "{collection_name}" collection')
@@ -85,7 +85,7 @@ def find_all(collection_name: str) -> Cursor:
     Returns:
         Cursor: Mongo cursor
     """
-    collection = MongoManager.get_game_collection(collection_name)
+    collection = MongoManager.get_collection(collection_name)
     cursor = collection.find({})
     return cursor
 
@@ -101,7 +101,7 @@ def add_one(document: Dict, collection_name: str) -> None:
     Returns:
         None
     """
-    collection = MongoManager.get_game_collection(collection_name)
+    collection = MongoManager.get_collection(collection_name)
     collection.insert_one(document)
 
 
@@ -116,7 +116,7 @@ def add_many(documents: List[Dict], collection_name: str) -> None:
     Returns:
         None
     """
-    collection = MongoManager.get_game_collection(collection_name)
+    collection = MongoManager.get_collection(collection_name)
     collection.insert_many(documents)
 
 
@@ -133,7 +133,7 @@ def update_one_by_id(id_document: str, dict_updates: Dict, collection_name: str,
     Returns:
         None
     """
-    collection = MongoManager.get_game_collection(collection_name)
+    collection = MongoManager.get_collection(collection_name)
     query = {'_id': id_document}
     updates = {'$set': dict_updates}
     collection.update_one(query, updates, upsert)
@@ -141,7 +141,7 @@ def update_one_by_id(id_document: str, dict_updates: Dict, collection_name: str,
 
 def delete_one(search_field: str, search_value: str, collection_name: str) -> None:
     """
-    Removes a game from the Database
+    Removes a document from the database
 
     Args:
         search_field (str): Field to identify the document
@@ -151,13 +151,13 @@ def delete_one(search_field: str, search_value: str, collection_name: str) -> No
     Returns:
         None
     """
-    collection = MongoManager.get_game_collection(collection_name)
+    collection = MongoManager.get_collection(collection_name)
     collection.delete_one({search_field: search_value})
 
 
 def delete_many(search_field: str, search_value: str, collection_name: str) -> None:
     """
-    Removes a game from the Database
+    Removes many documents from the database
 
     Args:
         search_field (str): Field to identify the document
@@ -167,5 +167,19 @@ def delete_many(search_field: str, search_value: str, collection_name: str) -> N
     Returns:
         None
     """
-    collection = MongoManager.get_game_collection(collection_name)
+    collection = MongoManager.get_collection(collection_name)
     collection.delete_many({search_field: search_value})
+
+
+def delete_all(collection_name: str) -> None:
+    """
+    Removes all documents from the database
+
+    Args:
+        collection_name (str): Collection to search the element
+
+    Returns:
+        None
+    """
+    collection = MongoManager.get_collection(collection_name)
+    collection.delete_many({})

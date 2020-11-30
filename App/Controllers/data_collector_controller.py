@@ -7,30 +7,33 @@ from werkzeug.utils import secure_filename
 from App.Models import Menu, AbstractRegister
 from App.Util import to_dict, BREAKFAST, LUNCH, COLOR_BREAKFAST, COLOR_LUNCH
 from config.upload_files import MENUS_ALLOWED_EXTENSIONS, UPLOAD_FOLDER, REGISTERS_ALLOWED_EXTENSIONS
-from App.Server.dataset_creation_server import transform_menu_data, transform_register_data, insert_menus, \
+from App.Server.data_collector_server import transform_menu_data, transform_register_data, insert_menus, \
     insert_registers
 
-dataset_creation_blueprint = Blueprint('dataset_creation', __name__, url_prefix='/dataset_creation')
+data_collector_blueprint = Blueprint('data_collector', __name__, url_prefix='/data_collector')
 
-FILE_KEY = 'file'
-FILE_TYPE_KEY = 'fileType'
-CATERING = 'catering'
+FILE = 'file'
+MENU = 'menu'
 
 
 def validate_upload_file_request(func):
     def wrapper():
-        extensions = MENUS_ALLOWED_EXTENSIONS if str(request.url).find('menu') != -1 else REGISTERS_ALLOWED_EXTENSIONS
-        file = request.files.get(FILE_KEY)
-        if FILE_KEY not in request.files:
-            return jsonify({'error': f"No '{FILE_KEY}' field was provided on the form-data request."}), 400
-        if not file or file.filename == '':
-            return jsonify({'error': f"No selected file."}), 400
-        if not is_allowed_file(file.filename, extensions):
-            allowed_extensions = ' or '.join(extensions).lower()
-            return jsonify({'error': f"Please upload a valid file with {allowed_extensions} extension."}), 400
-        if not os.path.exists(UPLOAD_FOLDER):
-            os.makedirs(UPLOAD_FOLDER)
-        return func()
+        try:
+            extensions = MENUS_ALLOWED_EXTENSIONS if str(request.url).find(MENU) != -1 \
+                else REGISTERS_ALLOWED_EXTENSIONS
+            file = request.files.get(FILE)
+            if FILE not in request.files:
+                return jsonify({'error': f"No '{FILE}' field was provided on the form-data request."}), 400
+            if not file or file.filename == '':
+                return jsonify({'error': f"No selected file."}), 400
+            if not is_allowed_file(file.filename, extensions):
+                allowed_extensions = ' or '.join(extensions).lower()
+                return jsonify({'error': f"Please upload a valid file with {allowed_extensions} extension."}), 400
+            if not os.path.exists(UPLOAD_FOLDER):
+                os.makedirs(UPLOAD_FOLDER)
+            return func()
+        except AttributeError:
+            return jsonify({'error': f"No '{FILE}' field was provided on the form-data request."}), 400
 
     wrapper.__name__ = func.__name__
     return wrapper
@@ -54,7 +57,7 @@ def is_allowed_file(filename: str, extensions: str):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in extensions
 
 
-@dataset_creation_blueprint.route('/menu/transform_file', methods=['GET'])
+@data_collector_blueprint.route('/menu/transform_file', methods=['GET'])
 def upload_menu_file():
     allowed_extensions = ' / '.join(MENUS_ALLOWED_EXTENSIONS).upper()
     return f'''
@@ -62,13 +65,13 @@ def upload_menu_file():
             <title>Upload a menu file with {allowed_extensions} extension</title>
             <h1>Upload a menu file with {allowed_extensions} extension</h1>
             <form method=post enctype=multipart/form-data>
-              <input type=file name={FILE_KEY}>
+              <input type=file name={FILE}>
               <input type=submit value=Upload>
             </form>
             '''
 
 
-@dataset_creation_blueprint.route('/register/transform_file', methods=['GET'])
+@data_collector_blueprint.route('/register/transform_file', methods=['GET'])
 def upload_register_file():
     allowed_extensions = ' / '.join(REGISTERS_ALLOWED_EXTENSIONS).upper()
     return f'''
@@ -76,17 +79,17 @@ def upload_register_file():
             <title>Upload a register file with {allowed_extensions} extension</title>
             <h1>Upload a register file with {allowed_extensions} extension</h1>
             <form method=post enctype=multipart/form-data>
-              <input type=file name={FILE_KEY}>
+              <input type=file name={FILE}>
               <input type=submit value=Upload>
             </form>
             '''
 
 
-@dataset_creation_blueprint.route('/menu/transform_file', methods=['POST'])
+@data_collector_blueprint.route('/menu/transform_file', methods=['POST'])
 @validate_upload_file_request
 def transform_menu_file():
     try:
-        file = request.files.get(FILE_KEY)
+        file = request.files.get(FILE)
         filename: str = secure_filename(file.filename)
         full_path_file = os.path.join(UPLOAD_FOLDER, filename)
         file.save(full_path_file)
@@ -102,11 +105,11 @@ def transform_menu_file():
             os.remove(full_path_file)
 
 
-@dataset_creation_blueprint.route('/register/transform_file', methods=['POST'])
+@data_collector_blueprint.route('/register/transform_file', methods=['POST'])
 @validate_upload_file_request
 def transform_register_file():
     try:
-        file = request.files.get(FILE_KEY)
+        file = request.files.get(FILE)
         filename: str = secure_filename(file.filename)
         full_path_file = os.path.join(UPLOAD_FOLDER, filename)
         file.save(full_path_file)
@@ -123,7 +126,7 @@ def transform_register_file():
             os.remove(full_path_file)
 
 
-@dataset_creation_blueprint.route('/menu/insert', methods=['POST'])
+@data_collector_blueprint.route('/menu/insert', methods=['POST'])
 @validate_insert_data_payload_request
 def insert_menus_data():
     try:
@@ -141,7 +144,7 @@ def insert_menus_data():
         return make_response(jsonify({'error': str(e)}), 400)
 
 
-@dataset_creation_blueprint.route('/register/insert', methods=['POST'])
+@data_collector_blueprint.route('/register/insert', methods=['POST'])
 @validate_insert_data_payload_request
 def insert_registers_data():
     try:

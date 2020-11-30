@@ -1,3 +1,3 @@
 from .app_info_controller import app_info_blueprint
-from .dataset_creation_controller import dataset_creation_blueprint
+from .data_collector_controller import data_collector_blueprint
 from .preprocessing_controller import preprocessing_blueprint

@@ -31,5 +31,15 @@ class RegisterFields:
     EXTRA = 'extra'
 
 
+class DataGroupedFields:
+    DATE = 'date'
+    DAY = 'day'
+    DIET = 'diet'
+    TOTAL_PEOPLE = 'total_people'
+    TOTAL_REQUESTS = 'total_requests'
+    REQUEST = 'request'
+    ATTEND = 'attend'
+
+
 BOW_MAX_FEATURES = 50
 BOW_FILE_PATH = './App/Server/Preprocessing/BagOfWords/models/'

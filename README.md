@@ -2,7 +2,7 @@ Food Waste Prediction
 ===================
 > TODO: Add a description about the project
 
-![Pipeline](pipeline.png)
+![App flow](app_flow.png)
 
 Project layout
 --------------

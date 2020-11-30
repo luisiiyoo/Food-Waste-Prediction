@@ -8,6 +8,8 @@ class MongoCollections:
     MENUS_BREAKFAST = 'menus_breakfast'
     REGISTERS_LUNCH = 'registers_lunch'
     REGISTERS_BREAKFAST = 'registers_breakfast'
+    DATASET_BREAKFAST = 'dataset_breakfast'
+    DATASET_LUNCH = 'dataset_lunch'
     MAINTAINERS = 'maintainers'
 
 
