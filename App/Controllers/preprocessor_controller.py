@@ -1,36 +1,15 @@
 import traceback
 from flask import Blueprint, jsonify, make_response, request
 from App.Server import preprocessor_server
-from App.Util import BREAKFAST, LUNCH
+from App.Util.constants import CATERING
 from App.Server import dataset_creator_server
+from App.Controllers.request_validators import validate_catering_in_payload_request
 
 preprocessing_blueprint = Blueprint('preprocessing', __name__, url_prefix='/preprocessing')
 
-FILE_KEY = 'file'
-FILE_TYPE_KEY = 'fileType'
-CATERING = 'catering'
-
-
-def validate_bow_payload_request(func):
-    def wrapper():
-        try:
-            caterings_opts = (BREAKFAST, LUNCH)
-            catering = request.json.get(CATERING)
-            if catering is None:
-                return jsonify({'error': f"No '{CATERING}' field was provided"}), 400
-            if catering not in caterings_opts:
-                return jsonify(
-                    {'error': f"'{catering}' is an invalid catering. Catering options: {caterings_opts}"}), 400
-            return func()
-        except AttributeError:
-            return jsonify({'error': f"No '{CATERING}' field was provided"}), 400
-
-    wrapper.__name__ = func.__name__
-    return wrapper
-
 
 @preprocessing_blueprint.route('/menu/bow/build', methods=['POST'])
-@validate_bow_payload_request
+@validate_catering_in_payload_request
 def build_menu_bow():
     try:
         catering = request.json.get(CATERING)
@@ -46,7 +25,7 @@ def build_menu_bow():
 
 
 @preprocessing_blueprint.route('/menu/bow/features', methods=['POST'])
-@validate_bow_payload_request
+@validate_catering_in_payload_request
 def get_menu_bow_features():
     try:
         catering = request.json.get(CATERING)
@@ -62,7 +41,7 @@ def get_menu_bow_features():
 
 
 @preprocessing_blueprint.route('/create-dataset', methods=['POST'])
-@validate_bow_payload_request
+@validate_catering_in_payload_request
 def create_dataset():
     try:
         catering = request.json.get(CATERING)

@@ -11,6 +11,10 @@ EXTRA_TAG = ' + Extras'
 COLOR_BREAKFAST = 'green'
 COLOR_LUNCH = 'blue'
 
+FILE = 'file'
+MENU = 'menu'
+CATERING = 'catering'
+
 
 class MenuFields:
     DATE = 'date'
@@ -31,7 +35,7 @@ class RegisterFields:
     EXTRA = 'extra'
 
 
-class DataGroupedFields:
+class DatasetFields:
     DATE = 'date'
     DAY = 'day'
     DIET = 'diet'

@@ -1,7 +1,7 @@
 import pandas
 from termcolor import cprint
 from typing import List, Dict, Set, Tuple, Union
-from App.Util.constants import DIETS, MenuFields, RegisterFields, DataGroupedFields
+from App.Util.constants import DIETS, MenuFields, RegisterFields, DatasetFields
 from App.Server.Preprocessor.BagOfWords import BagOfWords
 
 
@@ -75,7 +75,7 @@ class DatasetCreator:
         Returns:
             List[Dict[str, Union[str, int]]]: Merged dataset
         """
-        self.common_dates, self.different_dates = self.__get_common_dates(DataGroupedFields.DATE)
+        self.common_dates, self.different_dates = self.__get_common_dates(DatasetFields.DATE)
         bow_features: List[str] = self.menu_bow.get_features()
         cprint(f'Common dates: {len(self.common_dates)}. Dates not included: {len(self.different_dates)}', 'yellow')
 
@@ -100,12 +100,12 @@ class DatasetCreator:
 
                 group_record: Dict[str, Union[str, int]] = dict()
                 group_record['_id'] = f"{date}_{diet}"
-                group_record[DataGroupedFields.DATE] = date
-                group_record[DataGroupedFields.DAY] = menu[MenuFields.DAY].values[0]
-                group_record[DataGroupedFields.DIET] = diet
-                group_record[DataGroupedFields.TOTAL_PEOPLE] = len(registers)
-                group_record[DataGroupedFields.TOTAL_REQUESTS] = len(request)
-                group_record[DataGroupedFields.REQUEST] = diet_request
-                group_record[DataGroupedFields.ATTEND] = diet_attend_request
+                group_record[DatasetFields.DATE] = date
+                group_record[DatasetFields.DAY] = menu[MenuFields.DAY].values[0]
+                group_record[DatasetFields.DIET] = diet
+                group_record[DatasetFields.TOTAL_PEOPLE] = len(registers)
+                group_record[DatasetFields.TOTAL_REQUESTS] = len(request)
+                group_record[DatasetFields.REQUEST] = diet_request
+                group_record[DatasetFields.ATTEND] = diet_attend_request
                 grouped_data.append({**bow_dict, **group_record})
         return grouped_data

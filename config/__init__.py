@@ -1,2 +1,2 @@
-import config.upload_files
-from .mongo import MONGO_STR_CONNECTION, MONGO_DB_NAME, MongoCollections
+import config.uploading_config
+from .mongo_config import MONGO_STR_CONNECTION, MONGO_DB_NAME, MongoCollections

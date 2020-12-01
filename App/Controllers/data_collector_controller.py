@@ -5,56 +5,14 @@ from flask import Blueprint, jsonify, make_response, request
 from termcolor import colored
 from werkzeug.utils import secure_filename
 from App.Models import Menu, AbstractRegister
-from App.Util import to_dict, BREAKFAST, LUNCH, COLOR_BREAKFAST, COLOR_LUNCH
-from config.upload_files import MENUS_ALLOWED_EXTENSIONS, UPLOAD_FOLDER, REGISTERS_ALLOWED_EXTENSIONS
+from App.Util.helpers import to_dict
+from App.Util.constants import BREAKFAST, LUNCH, COLOR_BREAKFAST, COLOR_LUNCH, FILE
+from config.uploading_config import MENUS_ALLOWED_EXTENSIONS, UPLOAD_FOLDER, REGISTERS_ALLOWED_EXTENSIONS
 from App.Server.data_collector_server import transform_menu_data, transform_register_data, insert_menus, \
     insert_registers
+from App.Controllers.request_validators import validate_upload_file_request, validate_insert_data_payload_request
 
 data_collector_blueprint = Blueprint('data_collector', __name__, url_prefix='/data_collector')
-
-FILE = 'file'
-MENU = 'menu'
-
-
-def validate_upload_file_request(func):
-    def wrapper():
-        try:
-            extensions = MENUS_ALLOWED_EXTENSIONS if str(request.url).find(MENU) != -1 \
-                else REGISTERS_ALLOWED_EXTENSIONS
-            file = request.files.get(FILE)
-            if FILE not in request.files:
-                return jsonify({'error': f"No '{FILE}' field was provided on the form-data request."}), 400
-            if not file or file.filename == '':
-                return jsonify({'error': f"No selected file."}), 400
-            if not is_allowed_file(file.filename, extensions):
-                allowed_extensions = ' or '.join(extensions).lower()
-                return jsonify({'error': f"Please upload a valid file with {allowed_extensions} extension."}), 400
-            if not os.path.exists(UPLOAD_FOLDER):
-                os.makedirs(UPLOAD_FOLDER)
-            return func()
-        except AttributeError:
-            return jsonify({'error': f"No '{FILE}' field was provided on the form-data request."}), 400
-
-    wrapper.__name__ = func.__name__
-    return wrapper
-
-
-def validate_insert_data_payload_request(func):
-    def wrapper():
-        breakfast: List[Dict] = request.json.get(BREAKFAST)
-        lunch: List[Dict] = request.json.get(LUNCH)
-        if breakfast is None:
-            return make_response(jsonify({'error': f"No '{BREAKFAST}' field was provided on the request."}), 400)
-        if lunch is None:
-            return make_response(jsonify({'error': f"No '{LUNCH}' field was provided on the request."}), 400)
-        return func()
-
-    wrapper.__name__ = func.__name__
-    return wrapper
-
-
-def is_allowed_file(filename: str, extensions: str):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in extensions
 
 
 @data_collector_blueprint.route('/menu/transform_file', methods=['GET'])
