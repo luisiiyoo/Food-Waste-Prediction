@@ -1,12 +1,10 @@
-import pickle
-import os
 import time
 import pandas
 from typing import Dict, List, Set, Tuple
 from App.Database.query_data import get_list_menu_docs
 from App.Server.Preprocessor.BagOfWords import BagOfWords
-from App.Util.constants import DIETS, BOW_MAX_FEATURES, MenuFields
-from App.Util.constants import BOW_FILE_PATH
+from App.Util.constants import DIETS, BOW_MAX_FEATURES, BOW_FILE_PATH, MenuFields
+from App.Util.helpers import save_object_to_pkl_file, read_object_from_pkl_file
 
 ID = '_id'
 
@@ -19,7 +17,7 @@ def build_menus_bow_model(catering: str) -> Tuple[float, List[str]]:
 
     bow = BagOfWords(DIETS, BOW_MAX_FEATURES)
     bow.build(df, MenuFields.IS_SERVICE_DAY)
-    bow.save_results(bow_file_path)
+    save_object_to_pkl_file(bow, bow_file_path)
     features = bow.get_features()
 
     end: float = time.time()
@@ -29,11 +27,14 @@ def build_menus_bow_model(catering: str) -> Tuple[float, List[str]]:
 
 def read_menu_bow_model(catering: str) -> BagOfWords:
     bow_file_path: str = f"{BOW_FILE_PATH}{catering}_menu.pkl"
-    if not os.path.exists(bow_file_path) or not os.path.isfile(bow_file_path):
-        raise Exception(f"BoW file for {catering} menus does not exist. In order to get the features you need to build "
-                        f"the model first.")
-    with open(bow_file_path, 'rb', pickle.HIGHEST_PROTOCOL) as f:
-        bow: BagOfWords = pickle.load(f)
+    try:
+        bow: BagOfWords = read_object_from_pkl_file(bow_file_path)
+    except Exception as e:
+        if str(e).find('file does not exist') != -1:
+            raise Exception(
+                f"BoW file for {catering} menus does not exist. In order to get the features you need to build "
+                f"the model first.")
+        raise e
     return bow
 
 

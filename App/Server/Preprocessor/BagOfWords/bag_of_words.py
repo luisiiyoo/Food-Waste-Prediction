@@ -1,5 +1,3 @@
-import os
-import pickle
 from typing import List, Dict, Set
 import nltk
 import pandas
@@ -192,26 +190,3 @@ class BagOfWords:
         cprint(self.__bow_features, 'blue')
         cprint(self.__bow_vectors, 'blue')
         cprint(f'Size: {len(self.__bow_vectors)} * {len(self.__bow_vectors[0])}', 'blue')
-
-    def save_results(self, full_path_file: str) -> None:
-        """
-        Saves the instance in a pkl file
-
-        Args:
-            full_path_file (str): Complete path and file name where will be saved the file
-
-        Returns:
-            None
-        """
-        print(f'\nSaving variables on {full_path_file}')
-        output_path, output_file = os.path.split(full_path_file)
-
-        if output_path and not os.path.isdir(output_path):
-            try:
-                os.makedirs(output_path)  # os.mkdir for one directory only
-            except OSError:
-                print("Creation of the directory %s failed" % output_path)
-            else:
-                print("Successfully created the directory %s " % output_path)
-        with open(full_path_file, 'wb') as f:
-            pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)

@@ -1,3 +1,5 @@
+import pickle
+import os
 import json
 import random
 import uuid
@@ -8,7 +10,58 @@ from numpy.random import permutation
 from App.Util.constants import DATE_FORMAT
 
 
+def read_object_from_pkl_file(full_file_path: str) -> Any:
+    """
+    Reads an object from a pkl file
+
+    Args:
+        full_file_path (str): Complete path and file name where will be saved the file
+
+    Returns:
+        Any: Object from the pkl read file
+    """
+    if not os.path.exists(full_file_path) or not os.path.isfile(full_file_path):
+        raise Exception(f"'{full_file_path}' file does not exist.")
+    with open(full_file_path, 'rb', pickle.HIGHEST_PROTOCOL) as f:
+        obj: Any = pickle.load(f)
+    return obj
+
+
+def save_object_to_pkl_file(obj: Any, full_file_path: str) -> None:
+    """
+    Saves an object in a pkl file
+
+    Args:
+        obj (Any): Object to save in a pkl file
+        full_file_path (str): Complete path and file name where will be saved the file
+
+    Returns:
+        None
+    """
+    print(f'\nSaving variables on {full_file_path}')
+    output_path, output_file = os.path.split(full_file_path)
+
+    if output_path and not os.path.isdir(output_path):
+        try:
+            os.makedirs(output_path)  # os.mkdir for one directory only
+        except OSError:
+            print("Creation of the directory %s failed" % output_path)
+        else:
+            print("Successfully created the directory %s " % output_path)
+    with open(full_file_path, 'wb') as f:
+        pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
+
+
 def str_to_timestamp(date: str) -> int:
+    """
+    Converts a string to a timestamp integer
+
+    Args:
+        date (str): Date as a string
+
+    Returns:
+        int: Timestamp integer
+    """
     date_formats = (DATE_FORMAT, DATE_FORMAT.replace('-', '/'), DATE_FORMAT.replace('-', '.'))
     for fmt in date_formats:
         try:
@@ -20,11 +73,29 @@ def str_to_timestamp(date: str) -> int:
 
 
 def timestamp_to_str(timestamp: int) -> str:
+    """
+    Converts a timestamp integer to a string
+
+    Args:
+        timestamp (int): Timestamp integer
+
+    Returns:
+        str: Date as a string
+    """
     dt_object = datetime.fromtimestamp(timestamp)
     return dt_object.strftime(DATE_FORMAT)
 
 
 def datetime_to_str(date: datetime) -> str:
+    """
+    Converts a datetime_to_str instance to a string
+
+    Args:
+        date (datetime): Instance of datetime
+
+    Returns:
+        str: Date as a string
+    """
     return date.strftime(DATE_FORMAT)
 
 
