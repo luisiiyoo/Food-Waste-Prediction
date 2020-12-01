@@ -1,3 +1,4 @@
+import time
 from typing import List, Dict, Union, Tuple
 import pandas
 from sklearn.model_selection import train_test_split
@@ -23,10 +24,9 @@ def get_dataset(catering: str) -> Tuple[pandas.DataFrame, pandas.DataFrame]:
     return X, y
 
 
-def generate_model(catering: str) -> Tuple[str, AbstractRegression, float, float, float]:
+def evaluate_train_model_performance(catering: str) -> Tuple[float, str, AbstractRegression, float, float, float]:
+    start: float = time.time()
     independent_vars, dependent_var = get_dataset(catering)
-
-    # Break off validation set from training data
     x_train, x_valid, y_train, y_valid = train_test_split(independent_vars, dependent_var,
                                                           test_size=prediction_config.TEST_SIZE_PROPORTION,
                                                           random_state=prediction_config.RANDOM_STATE)
@@ -43,7 +43,31 @@ def generate_model(catering: str) -> Tuple[str, AbstractRegression, float, float
     model = models_dict[model_name]
     evaluation = evaluate_models(model_name=model_name, model=model, x_train=x_train, y_train=y_train, x_valid=x_valid,
                                  y_valid=y_valid, predict_samples=True)
-    return model_name, model, *evaluation
 
-    def predict():
-        pass
+    end: float = time.time()
+    time_elapsed = end - start
+    return time_elapsed, model_name, model, *evaluation
+
+
+def generate_model(catering: str) -> Tuple[float, str, AbstractRegression]:
+    start: float = time.time()
+    independent_vars, dependent_var = get_dataset(catering)
+    models_dict = build_model(x_train=independent_vars, y_train=dependent_var,
+                              model_names=prediction_config.MODELS,
+                              max_cardinality=prediction_config.MAX_CARDINALITY,
+                              estimators=prediction_config.ESTIMATORS,
+                              svr_kernel=prediction_config.SVR_KERNEL,
+                              poly_degree=prediction_config.POLY_DEGREE,
+                              max_depth=prediction_config.MAX_DEPTH,
+                              random_state=prediction_config.RANDOM_STATE)
+
+    model_name: str = list(models_dict.keys())[0]
+    model: AbstractRegression = models_dict[model_name]
+
+    end: float = time.time()
+    time_elapsed = end - start
+    return time_elapsed, model_name, model
+
+
+def predict():
+    pass
