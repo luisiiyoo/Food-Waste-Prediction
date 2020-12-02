@@ -5,10 +5,15 @@ from sklearn.model_selection import train_test_split
 from App.Database.query_data import get_dataset_docs
 from App.Server.Predictor import build_model, evaluate_models
 from App.Server.Predictor.regression import AbstractRegression
-from App.Util.constants import DatasetFields
+from App.Util.constants import DatasetFields, REGRESSION_MODEL_FILE_PATH
+from App.Util.helpers import save_object_to_pkl_file, read_object_from_pkl_file
 from config import prediction_config
 
 ID = '_id'
+
+
+def get_file_name_model(catering: str) -> str:
+    return f"{REGRESSION_MODEL_FILE_PATH}{catering}.pkl"
 
 
 def get_dataset(catering: str) -> Tuple[pandas.DataFrame, pandas.DataFrame]:
@@ -49,8 +54,9 @@ def evaluate_train_model_performance(catering: str) -> Tuple[float, str, Abstrac
     return time_elapsed, model_name, model, *evaluation
 
 
-def generate_model(catering: str) -> Tuple[float, str, AbstractRegression]:
+def generate_model(catering: str) -> Tuple[float]:
     start: float = time.time()
+    regression_model_file_path = get_file_name_model(catering)
     independent_vars, dependent_var = get_dataset(catering)
     models_dict = build_model(x_train=independent_vars, y_train=dependent_var,
                               model_names=prediction_config.MODELS,
@@ -63,10 +69,24 @@ def generate_model(catering: str) -> Tuple[float, str, AbstractRegression]:
 
     model_name: str = list(models_dict.keys())[0]
     model: AbstractRegression = models_dict[model_name]
+    save_object_to_pkl_file(model, regression_model_file_path)
 
     end: float = time.time()
     time_elapsed = end - start
-    return time_elapsed, model_name, model
+    return time_elapsed
+
+
+def read_regression_model(catering: str) -> AbstractRegression:
+    file_path = get_file_name_model(catering)
+    try:
+        regression_model: AbstractRegression = read_object_from_pkl_file(file_path)
+    except Exception as e:
+        if str(e).find('file does not exist') != -1:
+            raise Exception(
+                f"The regression model file for {catering} does not exist. In order to predict you need to build the "
+                f"model first.")
+        raise e
+    return regression_model
 
 
 def predict():

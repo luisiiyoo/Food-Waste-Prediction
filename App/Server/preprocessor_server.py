@@ -9,9 +9,13 @@ from App.Util.helpers import save_object_to_pkl_file, read_object_from_pkl_file
 ID = '_id'
 
 
+def get_file_name_model(catering: str) -> str:
+    return f"{BOW_FILE_PATH}{catering}_menu.pkl"
+
+
 def build_menus_bow_model(catering: str) -> Tuple[float, List[str]]:
     start: float = time.time()
-    bow_file_path = f"{BOW_FILE_PATH}{catering}_menu.pkl"
+    bow_file_path = get_file_name_model(catering)
     menus: List[Dict] = get_list_menu_docs(catering)
     df = pandas.DataFrame(data=menus).set_index(ID).sort_index()
 
@@ -26,7 +30,7 @@ def build_menus_bow_model(catering: str) -> Tuple[float, List[str]]:
 
 
 def read_menu_bow_model(catering: str) -> BagOfWords:
-    bow_file_path: str = f"{BOW_FILE_PATH}{catering}_menu.pkl"
+    bow_file_path = get_file_name_model(catering)
     try:
         bow: BagOfWords = read_object_from_pkl_file(bow_file_path)
     except Exception as e:

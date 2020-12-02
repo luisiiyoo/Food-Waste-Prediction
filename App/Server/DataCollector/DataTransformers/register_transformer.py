@@ -133,7 +133,7 @@ class RegisterTransformer:
             # Converting to the correct sample_data type
             df[RegisterFields.REQUEST] = df.loc[:, RegisterFields.DIET].notnull().tolist()
             df[RegisterFields.DATE] = datetime_to_str(date_record)
-            df[RegisterFields.ATTEND] = df[RegisterFields.ATTEND].astype('bool')
+            df[RegisterFields.ATTEND] = df[RegisterFields.ATTEND].fillna(False).astype('bool')
 
             # Keep sample_data that is not empty on PERSON column
             df = df[df[RegisterFields.PERSON].notna()]

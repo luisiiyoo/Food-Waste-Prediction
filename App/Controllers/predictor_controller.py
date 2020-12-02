@@ -34,11 +34,10 @@ def get_train_model_performance():
 def build_regression_model():
     try:
         catering: List[Dict] = request.json.get(CATERING)
-        time_elapsed, model_name, model = generate_model(catering)
+        time_elapsed = generate_model(catering)
         response = {
             "time": f"{round(time_elapsed, 4)} sec",
             "catering": catering,
-            "model_name": model_name
         }
         return make_response(jsonify(response), 200)
     except Exception as e:
