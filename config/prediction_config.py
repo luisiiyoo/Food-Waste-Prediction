@@ -4,7 +4,7 @@ TARGET_COLUMN = DatasetFields.ATTEND
 EXCLUDE_COLS = [DatasetFields.DATE]
 
 TEST_SIZE_PROPORTION = 1 / 5
-RANDOM_STATE = 1
+RANDOM_STATE = 2
 
 MODELS = ['GradientBoostingRegressor']
 MAX_CARDINALITY = 10

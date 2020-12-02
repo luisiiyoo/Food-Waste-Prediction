@@ -5,10 +5,10 @@ import requests
 
 UPLOAD_MENUS_FLAG = True
 UPLOAD_REGISTERS_FLAG = False
-TRANSFORM_MENUS_FILES_URL = "http://0.0.0.0:5050/dataset_creation/menu/transform_file"
-UPLOAD_MENUS_URL = "http://0.0.0.0:5050/dataset_creation/menu/insert"
-TRANSFORM_REGISTERS_FILES_URL = "http://0.0.0.0:5050/dataset_creation/register/transform_file"
-UPLOAD_REGISTERS_URL = "http://0.0.0.0:5050/dataset_creation/register/insert"
+TRANSFORM_MENUS_FILES_URL = "http://0.0.0.0:5050/data_collector/menu/transform_file"
+UPLOAD_MENUS_URL = "http://0.0.0.0:5050/data_collector/menu/insert"
+TRANSFORM_REGISTERS_FILES_URL = "http://0.0.0.0:5050/data_collector/register/transform_file"
+UPLOAD_REGISTERS_URL = "http://0.0.0.0:5050/data_collector/register/insert"
 MENUS_PATH = './sample_data/menus/'
 MENUS_EXTENSION = ['.csv', '.tsv']
 REGISTERS_PATH = './sample_data/registers/'

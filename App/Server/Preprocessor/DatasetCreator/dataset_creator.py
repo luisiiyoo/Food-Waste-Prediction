@@ -65,17 +65,20 @@ class DatasetCreator:
         different_dates: Set = all_dates - common_dates
         return list(common_dates), list(different_dates)
 
-    def build(self) -> List[Dict[str, Union[str, int]]]:
+    def build(self, ignore_attend: bool = False) -> List[Dict[str, Union[str, int]]]:
         """
         Groups the data to generate a new frame
 
         Args:
-            None
+            ignore_attend (bool): Flag to ignore attend column
 
         Returns:
             List[Dict[str, Union[str, int]]]: Merged dataset
         """
         self.common_dates, self.different_dates = self.__get_common_dates(DatasetFields.DATE)
+        if len(self.common_dates) == 0:
+            raise Exception(f"There are no dates in common between register and menu datasets.")
+
         bow_features: List[str] = self.menu_bow.get_features()
         cprint(f'Common dates: {len(self.common_dates)}. Dates not included: {len(self.different_dates)}', 'yellow')
 
@@ -84,16 +87,14 @@ class DatasetCreator:
             menu: pandas.DataFrame = get_data_satisfy_condition(self.df_menu, MenuFields.DATE, date)
             registers: pandas.DataFrame = get_data_satisfy_condition(self.df_registers, RegisterFields.DATE, date)
 
-            no_request = get_data_satisfy_condition(registers, RegisterFields.REQUEST, False)
-            request = get_data_satisfy_condition(registers, RegisterFields.REQUEST, True)
+            request: pandas.DataFrame = get_data_satisfy_condition(registers, RegisterFields.REQUEST, True)
+            no_request: pandas.DataFrame = get_data_satisfy_condition(registers, RegisterFields.REQUEST, False)
 
-            attend_request = get_data_satisfy_condition(request, RegisterFields.ATTEND, True)
-            no_attend_request = get_data_satisfy_condition(request, RegisterFields.ATTEND, False)
+            if not ignore_attend:
+                attend_request: pandas.DataFrame = get_data_satisfy_condition(request, RegisterFields.ATTEND, True)
+                no_attend_request: pandas.DataFrame = get_data_satisfy_condition(request, RegisterFields.ATTEND, False)
 
             for diet in DIETS:
-                diet_request = len(get_data_satisfy_condition(request, RegisterFields.DIET, diet))
-                diet_attend_request = len(get_data_satisfy_condition(attend_request, RegisterFields.DIET, diet))
-
                 raw_text: List[str] = menu[diet].values
                 bow_vector: List[int] = self.menu_bow.vectorize_raw_data(raw_text)[0].tolist()
                 bow_dict = dict(zip(bow_features, bow_vector))
@@ -105,7 +106,13 @@ class DatasetCreator:
                 group_record[DatasetFields.DIET] = diet
                 group_record[DatasetFields.TOTAL_PEOPLE] = len(registers)
                 group_record[DatasetFields.TOTAL_REQUESTS] = len(request)
+
+                diet_request = len(get_data_satisfy_condition(request, RegisterFields.DIET, diet))
                 group_record[DatasetFields.REQUEST] = diet_request
-                group_record[DatasetFields.ATTEND] = diet_attend_request
+
+                if not ignore_attend:
+                    diet_attend_request = len(get_data_satisfy_condition(attend_request, RegisterFields.DIET, diet))
+                    group_record[DatasetFields.ATTEND] = diet_attend_request
+
                 grouped_data.append({**bow_dict, **group_record})
         return grouped_data

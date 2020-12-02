@@ -18,6 +18,8 @@ def get_file_name_model(catering: str) -> str:
 
 def get_dataset(catering: str) -> Tuple[pandas.DataFrame, pandas.DataFrame]:
     dataset = get_dataset_docs(catering)
+    if len(dataset) == 0:
+        raise Exception("Empty training dataset, you need to build first the training dataset before use it.")
     df = pandas.DataFrame(data=dataset).set_index(ID)
     df[DatasetFields.DATE] = pandas.to_datetime(df[DatasetFields.DATE])
     df = df.sort_values(by=[DatasetFields.DATE, DatasetFields.DIET], ascending=True)
