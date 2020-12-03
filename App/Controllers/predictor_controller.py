@@ -80,3 +80,23 @@ def transform_test_data():
     except Exception as e:
         traceback.print_exc()
         return make_response(jsonify({'error': str(e)}), 400)
+
+
+@predictor_blueprint.route('/predict', methods=['POST'])
+def predict():
+    try:
+        breakfast_data = request.json.get(BREAKFAST)
+        lunch_data = request.json.get(LUNCH)
+        response_dict = dict()
+
+        if breakfast_data is not None:
+            response_dict[BREAKFAST] = predictor_server.predict(BREAKFAST, breakfast_data)
+        if lunch_data is not None:
+            response_dict[LUNCH] = predictor_server.predict(LUNCH, lunch_data)
+        if breakfast_data is None and lunch_data is None:
+            return make_response(jsonify({'error': f"Missing {BREAKFAST} or {LUNCH}  fields in the request"}), 400)
+
+        return make_response(jsonify(response_dict), 200)
+    except Exception as e:
+        traceback.print_exc()
+        return make_response(jsonify({'error': str(e)}), 400)

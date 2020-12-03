@@ -10,16 +10,22 @@ from App.Util.helpers import save_object_to_pkl_file, read_object_from_pkl_file
 from config import prediction_config
 
 ID = '_id'
+PREDICTION = "prediction"
 
 
 def get_file_name_model(catering: str) -> str:
     return f"{REGRESSION_MODEL_FILE_PATH}{catering}.pkl"
 
 
-def get_dataset(catering: str) -> Tuple[pandas.DataFrame, pandas.DataFrame]:
+def get_dataset(catering: str) -> List[Dict]:
     dataset = get_dataset_docs(catering)
     if len(dataset) == 0:
         raise Exception("Empty training dataset, you need to build first the training dataset before use it.")
+    return dataset
+
+
+def get_vars_from_dataset(catering: str) -> Tuple[pandas.DataFrame, pandas.DataFrame]:
+    dataset = get_dataset(catering)
     df = pandas.DataFrame(data=dataset).set_index(ID)
     df[DatasetFields.DATE] = pandas.to_datetime(df[DatasetFields.DATE])
     df = df.sort_values(by=[DatasetFields.DATE, DatasetFields.DIET], ascending=True)
@@ -33,7 +39,7 @@ def get_dataset(catering: str) -> Tuple[pandas.DataFrame, pandas.DataFrame]:
 
 def evaluate_train_model_performance(catering: str) -> Tuple[float, str, AbstractRegression, float, float, float]:
     start: float = time.time()
-    independent_vars, dependent_var = get_dataset(catering)
+    independent_vars, dependent_var = get_vars_from_dataset(catering)
     x_train, x_valid, y_train, y_valid = train_test_split(independent_vars, dependent_var,
                                                           test_size=prediction_config.TEST_SIZE_PROPORTION,
                                                           random_state=prediction_config.RANDOM_STATE)
@@ -59,7 +65,7 @@ def evaluate_train_model_performance(catering: str) -> Tuple[float, str, Abstrac
 def generate_model(catering: str) -> Tuple[float]:
     start: float = time.time()
     regression_model_file_path = get_file_name_model(catering)
-    independent_vars, dependent_var = get_dataset(catering)
+    independent_vars, dependent_var = get_vars_from_dataset(catering)
     models_dict = build_model(x_train=independent_vars, y_train=dependent_var,
                               model_names=prediction_config.MODELS,
                               max_cardinality=prediction_config.MAX_CARDINALITY,
@@ -91,5 +97,40 @@ def read_regression_model(catering: str) -> AbstractRegression:
     return regression_model
 
 
-def predict():
-    pass
+def validate_raw_test_data(func):
+    def decorator(catering: str, raw_test_data: List[Dict]):
+        # Obtaining the fields that must have the test data
+        required_fields = set(get_dataset(catering)[0].keys())
+        required_fields.discard(DatasetFields.ATTEND)
+        for data in raw_test_data:
+            data_fields = set(data.keys())
+            if required_fields != data_fields:
+                missing = required_fields - data_fields
+                no_required = data_fields - required_fields
+                missing_str = f"One or more records not contain {missing} field(s). " if missing else ''
+                no_required_str = f"Fields not required: {no_required}. " if no_required else ''
+                raise Exception(f"{missing_str}{no_required_str}")
+        return func(catering, raw_test_data)
+
+    decorator.__name__ = func.__name__
+    return decorator
+
+
+@validate_raw_test_data
+def predict(catering: str, raw_test_data: List[Dict]) -> List[Dict]:
+    model: AbstractRegression = read_regression_model(catering)
+    test_data = pandas.DataFrame(data=raw_test_data).set_index(ID)
+
+    predictions = list(map(lambda val: round(val, 2), model.predict(test_data)))
+
+    predictions_dicts: List[Dict] = list()
+    for pd_row, prediction in zip(test_data.iterrows(), predictions):
+        idx, row = pd_row
+        predictions_dicts.append({
+            ID: idx,
+            DatasetFields.DATE: row[DatasetFields.DATE],
+            DatasetFields.DIET: row[DatasetFields.DIET],
+            DatasetFields.REQUEST: row[DatasetFields.REQUEST],
+            PREDICTION: prediction
+        })
+    return predictions_dicts

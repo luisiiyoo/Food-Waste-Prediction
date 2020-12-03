@@ -88,11 +88,14 @@ class DatasetCreator:
             registers: pandas.DataFrame = get_data_satisfy_condition(self.df_registers, RegisterFields.DATE, date)
 
             request: pandas.DataFrame = get_data_satisfy_condition(registers, RegisterFields.REQUEST, True)
-            no_request: pandas.DataFrame = get_data_satisfy_condition(registers, RegisterFields.REQUEST, False)
 
             if not ignore_attend:
                 attend_request: pandas.DataFrame = get_data_satisfy_condition(request, RegisterFields.ATTEND, True)
-                no_attend_request: pandas.DataFrame = get_data_satisfy_condition(request, RegisterFields.ATTEND, False)
+                count_attendance = sum(
+                    [len(get_data_satisfy_condition(attend_request, RegisterFields.DIET, diet)) for diet in DIETS])
+                if count_attendance == 0:
+                    cprint(f"Skip date '{date}' because it contains 0 attendance.", 'red')
+                    continue
 
             for diet in DIETS:
                 raw_text: List[str] = menu[diet].values

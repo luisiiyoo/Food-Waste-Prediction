@@ -109,6 +109,7 @@ class RegisterTransformer:
         Returns:
             pandas.DataFrame: Registers extracted
         """
+        cprint(f"Reading '{self.full_path_file}' as ExcelFile", 'cyan')
         xls_file = pandas.ExcelFile(self.full_path_file)
         sheets = xls_file.sheet_names
         frames: List[pandas.DataFrame] = []
@@ -118,8 +119,12 @@ class RegisterTransformer:
             # is_service_day = (df.iloc[0:5, 0].str.lower() == 'holiday').sum() == 0
             first_rows = list(df.iloc[0:5, 0].str.lower().values)
             is_service_day = all(record not in NO_SERVICE_TAGS for record in first_rows)
+
+            count_attendance = df.iloc[INDEX_START:, cols_idx[-1]].fillna(False).astype('bool').sum()
+            if count_attendance == 0:
+                cprint(f"Warning: '{sheet}' sheet does not contain records of attendance", 'yellow')
             if not is_service_day:
-                print(f'Skip {sheet} because it has one NO_SERVICE_TAGS: {NO_SERVICE_TAGS}')
+                cprint(f"Skip '{sheet}' sheet because it has one NO_SERVICE_TAGS: {NO_SERVICE_TAGS}", 'red')
                 continue
             df = df.iloc[INDEX_START:, cols_idx]
 
