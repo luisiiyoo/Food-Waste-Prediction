@@ -78,8 +78,8 @@ def build_model(model_names: List[str], x_train: DataFrame, y_train: DataFrame,
 
 
 def evaluate_models(model_name: str, model: regression.AbstractRegression, x_train: DataFrame, y_train: DataFrame,
-                    x_valid: DataFrame, y_valid: DataFrame, predict_samples: bool = False, num_folds: int = 10,
-                    scoring: str = 'r2') -> Tuple[float, float, float]:
+                    x_valid: DataFrame, y_valid: DataFrame, predict_samples: bool, num_folds: int, num_repeats: int,
+                    scoring: str, random_state: int) -> Tuple[float, float, float]:
     """
     Creates a dictionary based on a list of desired regression models
 
@@ -92,15 +92,21 @@ def evaluate_models(model_name: str, model: regression.AbstractRegression, x_tra
         y_valid (pandas.DataFrame): Dependent variable from the validation data.
         predict_samples: If true, prints the prediction for some validation inputs
         num_folds (int): Number of cross validation folds
+        num_repeats (int): Number of repeats for cross validation
         scoring (str): Type of scoring evaluation
+        random_state (int): Number used for initializing the internal random number generator
 
     Returns:
         None
     """
     color = model.print_color
     r2_valid = model.evaluate(x_valid=x_valid, y_valid=y_valid)
-    cross_val_r2_mean_train, cross_val_r2_std_train = model.get_cross_validation_mean_score(x_train=x_train, y_train=y_train,
-                                                                        num_folds=num_folds, scoring=scoring)
+    cross_val_r2_mean_train, cross_val_r2_std_train = model.get_cross_validation_mean_score(x_train=x_train,
+                                                                                            y_train=y_train,
+                                                                                            num_folds=num_folds,
+                                                                                            num_repeats=num_repeats,
+                                                                                            scoring=scoring,
+                                                                                            random_state=random_state)
 
     cprint(f'{model_name}', color)
     cprint(f'\tCrossVal R2 (Train):  mean: {cross_val_r2_mean_train:.3f} ,  std: {cross_val_r2_std_train:.3f}', color)

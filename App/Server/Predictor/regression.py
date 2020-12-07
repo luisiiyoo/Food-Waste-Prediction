@@ -1,7 +1,7 @@
-import functools
 from typing import List, Tuple, Any
 from pandas import DataFrame
 from sklearn.pipeline import Pipeline
+from sklearn.model_selection import RepeatedKFold
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import r2_score
 from sklearn.preprocessing import StandardScaler
@@ -100,8 +100,8 @@ class AbstractRegression:
         y_test = self.__pipeline.predict(x)
         return y_test
 
-    def get_cross_validation_mean_score(self, x_train: DataFrame, y_train: DataFrame, num_folds: int, scoring: str) -> \
-            Tuple[float, float]:
+    def get_cross_validation_mean_score(self, x_train: DataFrame, y_train: DataFrame, num_folds: int, num_repeats: int,
+                                        scoring: str, random_state: int) -> Tuple[float, float]:
         """
         Gets the mean and std score for the training performance on cross validation
 
@@ -109,6 +109,8 @@ class AbstractRegression:
             x_train (pandas.DataFrame): Independent variables to train the model
             y_train (pandas.DataFrame): Dependent variable (target) to train the model
             num_folds (int): Number of folds to use on cross validation
+            num_repeats (int): Number of repeats for K-fold cross-validation
+            random_state (int): Number used for initializing the internal random number generator
             scoring (str): Metric name to calculate the score
 
         Returns:
@@ -117,7 +119,8 @@ class AbstractRegression:
         """
         if self.__pipeline is None:
             raise Exception("The model is not yet trained, you need to train first in order to predict.")
-        scores = cross_val_score(self.__pipeline, x_train, y_train, cv=num_folds, scoring=scoring)
+        cv = RepeatedKFold(n_splits=num_folds, n_repeats=num_repeats, random_state=random_state)
+        scores = cross_val_score(self.__pipeline, x_train, y_train, cv=cv, scoring=scoring)
         return scores.mean(), scores.std()
 
 

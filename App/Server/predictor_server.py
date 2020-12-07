@@ -1,5 +1,5 @@
 import time
-from typing import List, Dict, Union, Tuple
+from typing import List, Dict, Tuple
 import pandas
 from sklearn.model_selection import train_test_split
 from App.Database.query_data import get_dataset_docs
@@ -55,7 +55,9 @@ def evaluate_train_model_performance(catering: str) -> Tuple[float, str, Abstrac
     model_name = list(models_dict.keys())[0]
     model = models_dict[model_name]
     evaluation = evaluate_models(model_name=model_name, model=model, x_train=x_train, y_train=y_train, x_valid=x_valid,
-                                 y_valid=y_valid, predict_samples=True)
+                                 y_valid=y_valid, predict_samples=prediction_config.PREDICT_SAMPLES,
+                                 num_repeats=prediction_config.NUM_FOLDS, num_folds=prediction_config.NUM_FOLDS,
+                                 scoring=prediction_config.SCORING, random_state=prediction_config.RANDOM_STATE)
 
     end: float = time.time()
     time_elapsed = end - start
