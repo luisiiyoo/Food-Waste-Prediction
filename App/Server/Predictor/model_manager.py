@@ -5,9 +5,9 @@ from termcolor import cprint, COLORS
 from App.Server.Predictor import regression
 
 
-def build_model(model_names: List[str], x_train: DataFrame, y_train: DataFrame,
-                max_cardinality: int, estimators: List[int], svr_kernel: List[str], poly_degree: List[int],
-                max_depth: List[int], random_state: int) -> \
+def build_regression_model(model_names: List[str], x_train: DataFrame, y_train: DataFrame,
+                           max_cardinality: int, estimators: List[int], svr_kernel: List[str], poly_degree: List[int],
+                           max_depth: List[int], random_state: int) -> \
         Dict[str, regression.AbstractRegression]:
     """
     Creates a dictionary based on a list of desired regression models
@@ -97,7 +97,9 @@ def evaluate_models(model_name: str, model: regression.AbstractRegression, x_tra
         random_state (int): Number used for initializing the internal random number generator
 
     Returns:
-        None
+        float: cross_val_r2_mean_train
+        float: cross_val_r2_std_train,
+        float: r2_valid
     """
     color = model.print_color
     r2_valid = model.evaluate(x_valid=x_valid, y_valid=y_valid)

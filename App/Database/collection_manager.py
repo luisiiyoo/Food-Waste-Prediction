@@ -25,7 +25,7 @@ def get_register_collection(catering: str) -> str:
     return collection_name
 
 
-def get_database_collection(catering: str) -> str:
+def get_dataset_collection(catering: str) -> str:
     if catering == BREAKFAST:
         collection_name = MongoCollections.DATASET_BREAKFAST
     elif catering == LUNCH:

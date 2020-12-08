@@ -5,7 +5,7 @@ import random
 import uuid
 import time
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Union
 from numpy.random import permutation
 from App.Util.constants import DATE_FORMAT
 
@@ -112,7 +112,7 @@ def str_to_bool(cad: str) -> bool:
     return not (cad.lower() in ['false', '0'])
 
 
-def to_dict(obj: Any) -> Dict:
+def to_dict(obj: Any) -> Union[Dict, List[Dict]]:
     """
     Converts an instance to a dictionary
 

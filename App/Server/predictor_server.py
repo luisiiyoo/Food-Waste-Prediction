@@ -1,11 +1,12 @@
+import os
 import time
 from typing import List, Dict, Tuple
 import pandas
 from sklearn.model_selection import train_test_split
-from App.Database.query_data import get_dataset_docs
-from App.Server.Predictor import build_model, evaluate_models
+from App.Database.db_server import get_dataset_docs
+from App.Server.Predictor import build_regression_model, evaluate_models
 from App.Server.Predictor.regression import AbstractRegression
-from App.Util.constants import DatasetFields, REGRESSION_MODEL_FILE_PATH
+from App.Util.constants import DatasetFields, PREDICTION_MODEL_FILE_PATH
 from App.Util.helpers import save_object_to_pkl_file, read_object_from_pkl_file
 from config import prediction_config
 
@@ -14,7 +15,7 @@ PREDICTION = "prediction"
 
 
 def get_file_name_model(catering: str) -> str:
-    return f"{REGRESSION_MODEL_FILE_PATH}{catering}.pkl"
+    return f"{PREDICTION_MODEL_FILE_PATH}{catering}.pkl"
 
 
 def get_dataset(catering: str) -> List[Dict]:
@@ -43,14 +44,14 @@ def evaluate_train_model_performance(catering: str) -> Tuple[float, str, Abstrac
     x_train, x_valid, y_train, y_valid = train_test_split(independent_vars, dependent_var,
                                                           test_size=prediction_config.TEST_SIZE_PROPORTION,
                                                           random_state=prediction_config.RANDOM_STATE)
-    models_dict = build_model(x_train=x_train, y_train=y_train,
-                              model_names=prediction_config.MODELS,
-                              max_cardinality=prediction_config.MAX_CARDINALITY,
-                              estimators=prediction_config.ESTIMATORS,
-                              svr_kernel=prediction_config.SVR_KERNEL,
-                              poly_degree=prediction_config.POLY_DEGREE,
-                              max_depth=prediction_config.MAX_DEPTH,
-                              random_state=prediction_config.RANDOM_STATE)
+    models_dict = build_regression_model(x_train=x_train, y_train=y_train,
+                                         model_names=prediction_config.MODELS,
+                                         max_cardinality=prediction_config.MAX_CARDINALITY,
+                                         estimators=prediction_config.ESTIMATORS,
+                                         svr_kernel=prediction_config.SVR_KERNEL,
+                                         poly_degree=prediction_config.POLY_DEGREE,
+                                         max_depth=prediction_config.MAX_DEPTH,
+                                         random_state=prediction_config.RANDOM_STATE)
 
     model_name = list(models_dict.keys())[0]
     model = models_dict[model_name]
@@ -58,35 +59,41 @@ def evaluate_train_model_performance(catering: str) -> Tuple[float, str, Abstrac
                                  y_valid=y_valid, predict_samples=prediction_config.PREDICT_SAMPLES,
                                  num_repeats=prediction_config.NUM_FOLDS, num_folds=prediction_config.NUM_FOLDS,
                                  scoring=prediction_config.SCORING, random_state=prediction_config.RANDOM_STATE)
-
+    cross_val_r2_mean_train, cross_val_r2_std_train, r2_valid = evaluation
     end: float = time.time()
     time_elapsed = end - start
-    return time_elapsed, model_name, model, *evaluation
+    return time_elapsed, model_name, model, cross_val_r2_mean_train, cross_val_r2_std_train, r2_valid
 
 
-def generate_model(catering: str) -> Tuple[float]:
-    start: float = time.time()
+def remove_prediction_model(catering: str) -> None:
     regression_model_file_path = get_file_name_model(catering)
+    if os.path.exists(regression_model_file_path):
+        os.remove(regression_model_file_path)
+
+
+def build_prediction_model(catering: str) -> float:
+    start: float = time.time()
+    remove_prediction_model(catering)
     independent_vars, dependent_var = get_vars_from_dataset(catering)
-    models_dict = build_model(x_train=independent_vars, y_train=dependent_var,
-                              model_names=prediction_config.MODELS,
-                              max_cardinality=prediction_config.MAX_CARDINALITY,
-                              estimators=prediction_config.ESTIMATORS,
-                              svr_kernel=prediction_config.SVR_KERNEL,
-                              poly_degree=prediction_config.POLY_DEGREE,
-                              max_depth=prediction_config.MAX_DEPTH,
-                              random_state=prediction_config.RANDOM_STATE)
+    models_dict = build_regression_model(x_train=independent_vars, y_train=dependent_var,
+                                         model_names=prediction_config.MODELS,
+                                         max_cardinality=prediction_config.MAX_CARDINALITY,
+                                         estimators=prediction_config.ESTIMATORS,
+                                         svr_kernel=prediction_config.SVR_KERNEL,
+                                         poly_degree=prediction_config.POLY_DEGREE,
+                                         max_depth=prediction_config.MAX_DEPTH,
+                                         random_state=prediction_config.RANDOM_STATE)
 
     model_name: str = list(models_dict.keys())[0]
     model: AbstractRegression = models_dict[model_name]
-    save_object_to_pkl_file(model, regression_model_file_path)
+    save_object_to_pkl_file(model, get_file_name_model(catering))
 
     end: float = time.time()
     time_elapsed = end - start
     return time_elapsed
 
 
-def read_regression_model(catering: str) -> AbstractRegression:
+def read_prediction_model(catering: str) -> AbstractRegression:
     file_path = get_file_name_model(catering)
     try:
         regression_model: AbstractRegression = read_object_from_pkl_file(file_path)
@@ -120,7 +127,7 @@ def validate_raw_test_data(func):
 
 @validate_raw_test_data
 def predict(catering: str, raw_test_data: List[Dict]) -> List[Dict]:
-    model: AbstractRegression = read_regression_model(catering)
+    model: AbstractRegression = read_prediction_model(catering)
     test_data = pandas.DataFrame(data=raw_test_data).set_index(ID)
 
     predictions = list(map(lambda val: round(val, 2), model.predict(test_data)))

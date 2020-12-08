@@ -48,4 +48,4 @@ class DatasetFields:
 BOW_MAX_FEATURES = 50
 BOW_FILE_PATH = './App/Server/Preprocessor/BagOfWords/models/'
 
-REGRESSION_MODEL_FILE_PATH = './App/Server/Predictor/models/'
+PREDICTION_MODEL_FILE_PATH = './App/Server/Predictor/models/'

@@ -3,7 +3,7 @@ from App.Models import Menu, AbstractRegister, BreakfastRegister, LunchRegister
 from App.Server.DataCollector import MenuTransformer, RegisterTransformer
 from App.Util.constants import MenuFields, RegisterFields
 from App.Util.constants import BREAKFAST
-from App.Database.save_data import save_menus_to_db, save_registers_to_db
+from App.Database.db_server import save_menus_db, save_registers_db
 
 
 def transform_menu_data(full_path_file: str) -> Dict[str, List[Menu]]:
@@ -15,7 +15,7 @@ def transform_menu_data(full_path_file: str) -> Dict[str, List[Menu]]:
         raise Exception("The file has not a valid structure for transforming to menu sample_data.")
 
 
-def transform_register_data(full_path_file: str) -> Dict[str, Dict]:
+def transform_register_data(full_path_file: str) -> Dict[str, List[AbstractRegister]]:
     try:
         register_transformer = RegisterTransformer(full_path_file)
         dict_registers: Dict[str, List[AbstractRegister]] = register_transformer.build()
@@ -39,7 +39,7 @@ def insert_menus(catering: str, list_dict_menus: List[Dict]) -> None:
                         vegetarian=vegetarian)
             menus.append(menu)
         unique_dates: Set[str] = {menu.date for menu in menus}
-        save_menus_to_db(catering, menus, unique_dates)
+        save_menus_db(catering, menus, unique_dates)
     except KeyError as e:
         raise Exception(f"Missing key {e} on one or many menus.")
 
@@ -60,6 +60,6 @@ def insert_registers(catering: str, list_dict_registers: List[Dict]) -> None:
                                          extra=RegisterFields.EXTRA)
             registers.append(register)
         unique_dates: Set[str] = {register.date for register in registers}
-        save_registers_to_db(catering, registers, unique_dates)
+        save_registers_db(catering, registers, unique_dates)
     except KeyError as e:
         raise Exception(f"Missing key {e} on one or many registers for {catering}.")

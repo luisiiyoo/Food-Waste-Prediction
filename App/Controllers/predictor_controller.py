@@ -30,12 +30,12 @@ def get_train_model_performance():
         return make_response(jsonify({'error': str(e)}), 400)
 
 
-@predictor_blueprint.route('/build/regression-model', methods=['POST'])
+@predictor_blueprint.route('/build/prediction-model', methods=['POST'])
 @validate_catering_in_payload_request
 def build_regression_model():
     try:
         catering: List[Dict] = request.json.get(CATERING)
-        time_elapsed = predictor_server.generate_model(catering)
+        time_elapsed = predictor_server.build_prediction_model(catering)
         response = {
             "time": f"{round(time_elapsed, 4)} sec",
             "catering": catering,
