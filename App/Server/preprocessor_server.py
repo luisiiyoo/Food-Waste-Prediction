@@ -12,16 +12,44 @@ ID = '_id'
 
 
 def remove_menu_bow_model(catering: str) -> None:
+    """
+    Removes the menu BoW model to avoid issues in the training/prediction process
+
+    Args:
+        catering (string): A valid catering
+
+    Returns:
+        None
+    """
     bow_file_path = get_file_name_model(catering)
     if os.path.exists(bow_file_path):
         os.remove(bow_file_path)
 
 
 def get_file_name_model(catering: str) -> str:
+    """
+    Gets the proper full path file name of the BoW model
+
+    Args:
+        catering (string): A valid catering
+
+    Returns:
+        str: Full path file name of the BoW model
+    """
     return f"{BOW_FILE_PATH}{catering}_menu.pkl"
 
 
 def build_menus_bow_model(catering: str) -> Tuple[float, List[str]]:
+    """
+    Builds BoW model from all the menus data to extract features from each dish
+
+    Args:
+        catering (string): A valid catering
+
+    Returns:
+        float: Time elapsed
+        List[str]: List of the extracted BoW features
+    """
     start: float = time.time()
     # Drop older bow file, dataset and prediction model because the features can change
     remove_menu_bow_model(catering)
@@ -42,6 +70,18 @@ def build_menus_bow_model(catering: str) -> Tuple[float, List[str]]:
 
 
 def read_menu_bow_model(catering: str) -> BagOfWords:
+    """
+    Reads a pre-built BoW model given a catering
+
+    Args:
+        catering (string): A valid catering
+
+    Returns:
+        BagOfWords: BoW model instance
+
+    Raises:
+        Exception: if the BoW file was not found
+    """
     bow_file_path = get_file_name_model(catering)
     try:
         bow: BagOfWords = read_object_from_pkl_file(bow_file_path)
@@ -55,6 +95,16 @@ def read_menu_bow_model(catering: str) -> BagOfWords:
 
 
 def get_bow_features(catering: str) -> Tuple[List[str], Dict[str, Set[str]]]:
+    """
+    Reads a pre-built BoW model given a catering and returns the extracted features
+
+    Args:
+        catering (string): A valid catering
+
+    Returns:
+        List[str]: List of extracted features (stemmed words)
+        Dict[str, Set[str]]: Dictionary of the features (stemmed words) with their raw word
+    """
     bow = read_menu_bow_model(catering)
     features = bow.get_features()
     stemmed_words_features = bow.get_stemmed_words_features_dict()

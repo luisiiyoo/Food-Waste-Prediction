@@ -7,6 +7,18 @@ from App.Database.db_server import save_menus_db, save_registers_db
 
 
 def transform_menu_data(full_path_file: str) -> Dict[str, List[Menu]]:
+    """
+    Transform a raw file to a valid dictionary of menus data grouped by catering
+
+    Args:
+        full_path_file (string): Raw menu file path
+
+    Returns:
+        Dict[str, List[Menu]]: Dictionary of menus data grouped by catering
+
+    Raises:
+        Exception: If the file has not a valid structure
+    """
     try:
         menu_transformer = MenuTransformer(full_path_file)
         dict_menus: Dict[str, List[Menu]] = menu_transformer.build()
@@ -16,6 +28,18 @@ def transform_menu_data(full_path_file: str) -> Dict[str, List[Menu]]:
 
 
 def transform_register_data(full_path_file: str) -> Dict[str, List[AbstractRegister]]:
+    """
+    Transform a raw file to a valid dictionary of registers data grouped by catering
+
+    Args:
+        full_path_file (string): Raw menu file path
+
+    Returns:
+        Dict[str, List[Menu]]: Dictionary of registers data grouped by catering
+
+    Raises:
+        Exception: If the file has not a valid structure
+    """
     try:
         register_transformer = RegisterTransformer(full_path_file)
         dict_registers: Dict[str, List[AbstractRegister]] = register_transformer.build()
@@ -25,6 +49,19 @@ def transform_register_data(full_path_file: str) -> Dict[str, List[AbstractRegis
 
 
 def insert_menus(catering: str, list_dict_menus: List[Dict]) -> None:
+    """
+    Insert a list of menus to the given catering collection
+
+    Args:
+        catering (string): A valid catering
+        list_dict_menus (List[Dict]): List of menu dictionaries to insert into the db
+
+    Returns:
+        None
+
+    Raises:
+        Exception: If there is a missing menu attribute
+    """
     try:
         menus: List[Menu] = []
         for dict_menu in list_dict_menus:
@@ -45,6 +82,19 @@ def insert_menus(catering: str, list_dict_menus: List[Dict]) -> None:
 
 
 def insert_registers(catering: str, list_dict_registers: List[Dict]) -> None:
+    """
+    Insert a list of registers to the given catering collection
+
+    Args:
+        catering (string): A valid catering
+        list_dict_registers (List[Dict]): List of register dictionaries to insert into the db
+
+    Returns:
+        None
+
+    Raises:
+        Exception: If there is a missing register attribute
+    """
     try:
         registers: List[Union[BreakfastRegister, LunchRegister]] = []
         for dict_registers in list_dict_registers:

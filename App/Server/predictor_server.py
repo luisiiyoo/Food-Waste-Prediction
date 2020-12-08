@@ -1,6 +1,6 @@
 import os
 import time
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Callable
 import pandas
 from sklearn.model_selection import train_test_split
 from App.Database.db_server import get_dataset_docs
@@ -15,10 +15,31 @@ PREDICTION = "prediction"
 
 
 def get_file_name_model(catering: str) -> str:
+    """
+    Gets the proper full path file name of the prediction model
+
+    Args:
+        catering (string): A valid catering
+
+    Returns:
+        str: Full path file name of the prediction model
+    """
     return f"{PREDICTION_MODEL_FILE_PATH}{catering}.pkl"
 
 
 def get_dataset(catering: str) -> List[Dict]:
+    """
+    Gets the dataset related to a given catering
+
+    Args:
+        catering (string): A valid catering
+
+    Returns:
+        List[Dict]: Dataset of the given catering
+
+    Raises:
+        Exception: If the training dataset is empty
+    """
     dataset = get_dataset_docs(catering)
     if len(dataset) == 0:
         raise Exception("Empty training dataset, you need to build first the training dataset before use it.")
@@ -26,6 +47,16 @@ def get_dataset(catering: str) -> List[Dict]:
 
 
 def get_vars_from_dataset(catering: str) -> Tuple[pandas.DataFrame, pandas.DataFrame]:
+    """
+    Gets all the attributes (columns) in the training dataset
+
+    Args:
+        catering (string): A valid catering
+
+    Returns:
+        pandas.DataFrame: Records of the independent variable from the dataset
+        pandas.DataFrame: Records of the dependent variable from the dataset
+    """
     dataset = get_dataset(catering)
     df = pandas.DataFrame(data=dataset).set_index(ID)
     df[DatasetFields.DATE] = pandas.to_datetime(df[DatasetFields.DATE])
@@ -39,6 +70,20 @@ def get_vars_from_dataset(catering: str) -> Tuple[pandas.DataFrame, pandas.DataF
 
 
 def evaluate_train_model_performance(catering: str) -> Tuple[float, str, AbstractRegression, float, float, float]:
+    """
+    Evaluates the training process dividing all the data into two dataset (training and validation)
+
+    Args:
+        catering (string): A valid catering
+
+    Returns:
+        float: Time elapsed
+        str: Model name
+        AbstractRegression: Model created from the divided training dataset
+        float: Mean of the cross-validation R2 score from the training data
+        float: Standard deviation of the cross-validation R2 score from the training data
+        float: R2 score from the validation data
+    """
     start: float = time.time()
     independent_vars, dependent_var = get_vars_from_dataset(catering)
     x_train, x_valid, y_train, y_valid = train_test_split(independent_vars, dependent_var,
@@ -66,12 +111,30 @@ def evaluate_train_model_performance(catering: str) -> Tuple[float, str, Abstrac
 
 
 def remove_prediction_model(catering: str) -> None:
+    """
+    Removes the prediction model file in order to avoid unwanted behaviors in the training/prediction process
+
+    Args:
+        catering (string): A valid catering
+
+    Returns:
+        None
+    """
     regression_model_file_path = get_file_name_model(catering)
     if os.path.exists(regression_model_file_path):
         os.remove(regression_model_file_path)
 
 
 def build_prediction_model(catering: str) -> float:
+    """
+    Trains and builds a prediction model given a catering
+
+    Args:
+        catering (string): A valid catering
+
+    Returns:
+        float: time elapsed
+    """
     start: float = time.time()
     remove_prediction_model(catering)
     independent_vars, dependent_var = get_vars_from_dataset(catering)
@@ -94,19 +157,44 @@ def build_prediction_model(catering: str) -> float:
 
 
 def read_prediction_model(catering: str) -> AbstractRegression:
+    """
+    Reads a pre-built prediction model given a catering
+
+    Args:
+        catering (string): A valid catering
+
+    Returns:
+        AbstractRegression: Pre-built prediction model
+
+    Raises:
+        Exception: if the pre-built prediction model was not found
+    """
     file_path = get_file_name_model(catering)
     try:
         regression_model: AbstractRegression = read_object_from_pkl_file(file_path)
     except Exception as e:
         if str(e).find('file does not exist') != -1:
             raise Exception(
-                f"The regression model file for {catering} does not exist. In order to predict you need to build the "
+                f"The prediction model file for {catering} does not exist. In order to predict you need to build the "
                 f"model first.")
         raise e
     return regression_model
 
 
-def validate_raw_test_data(func):
+def validate_raw_test_data(func: Callable) -> Callable:
+    """
+    Decorator that validates the attributes of a given raw test data
+
+    Args:
+        func (Callable): Function to call after the validation
+
+    Returns:
+        Callable: Wrapper function
+
+    Raises:
+        Exception: if there is missing or extra fields on the raw data
+    """
+
     def decorator(catering: str, raw_test_data: List[Dict]):
         # Obtaining the fields that must have the test data
         required_fields = set(get_dataset(catering)[0].keys())
@@ -127,6 +215,16 @@ def validate_raw_test_data(func):
 
 @validate_raw_test_data
 def predict(catering: str, raw_test_data: List[Dict]) -> List[Dict]:
+    """
+    Predicts the attendance from a list of raw preprocessed test data
+
+    Args:
+        catering (string): A valid catering
+        raw_test_data (List[Dict]): List of raw preprocessed test data
+
+    Returns:
+        List[Dict]: List of predictions
+    """
     model: AbstractRegression = read_prediction_model(catering)
     test_data = pandas.DataFrame(data=raw_test_data).set_index(ID)
 
